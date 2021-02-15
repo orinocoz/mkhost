@@ -8,9 +8,7 @@
    rsync -vcEthr --delete --exclude=.git --safe-links --progress . USER@HOST:/home/USER/makehost/
    ```
 
-2. Login to the remote host
-
-3. Run:
+2. Login to the remote host, and run:
 
    ```
    makehost.py
