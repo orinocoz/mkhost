@@ -1,0 +1,9 @@
+---
+- hosts: all
+  vars:
+    postfix_conf:
+      mailbox_size_limit: 5
+    postfix_backup_multiple: true
+  roles:
+    - postfix
+
