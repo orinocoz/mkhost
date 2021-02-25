@@ -41,7 +41,10 @@ def install_pkg(pkgname):
 
 def configure_dovecot():
     install_pkg("dovecot-imapd")
-    execute_cmd(["doveconf", "-S"])
+    # TODO: improve this
+    #       -n : Show only settings with non-default values.
+    #       Might want to check them all ...
+    execute_cmd(["doveconf", "-nS"])
 
 def install_postfix():
     install_pkg("postfix")
