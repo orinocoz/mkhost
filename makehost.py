@@ -3,6 +3,7 @@
 import argparse
 import logging
 import os
+import subprocess
 import sys
 
 import makehost.cfg
@@ -11,6 +12,17 @@ def execute_cmd_interactive(cmdline):
     cmd = " ".join(cmdline)
     logging.info(cmd)
     os.system(cmd)
+
+def execute_cmd(cmdline):
+    logging.info(" ".join(cmdline))
+    result    = subprocess.run(cmdline, capture_output=True, check=True, encoding='utf-8')
+    err_lines = result.stderr.splitlines()
+    out_lines = result.stdout.splitlines()
+    for x in err_lines:
+        logging.warning(x)
+    for x in out_lines:
+        logging.debug(x)
+    return out_lines
 
 # Returns the apt-get command with some default arguments applied.
 # A list.
@@ -29,6 +41,7 @@ def install_pkg(pkgname):
 
 def configure_dovecot():
     install_pkg("dovecot-imapd")
+    execute_cmd(["doveconf", "-S"])
 
 def install_postfix():
     install_pkg("postfix")
