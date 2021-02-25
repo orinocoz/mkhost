@@ -7,17 +7,18 @@ import sys
 
 import makehost.cfg
 
-def execute_cmd(cmd):
+def execute_cmd(cmdline):
+    cmd = " ".join(cmdline)
     logging.info(cmd)
     os.system(cmd)
 
 # Returns the apt-get command with some default arguments applied.
-# A string.
+# A list.
 def apt_get_cmd(*args):
-    params = " ".join(filter(lambda x: x,
-                             ["--dry-run" if makehost_args.dry_run else None,
-                              "--yes" if makehost_args.batch else None]))
-    return "apt-get {} {}".format(params, " ".join(args))
+    return ["apt-get"]                                          +       \
+               (["--dry-run"] if makehost_args.dry_run else []) +       \
+               (["--yes"]     if makehost_args.batch   else []) +       \
+               list(args)
 
 def update_pkgs():
     execute_cmd(apt_get_cmd("update"))
