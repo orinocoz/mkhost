@@ -3,6 +3,3 @@ DOVECOT = {
 
 POSTFIX = {
 }
-
-MAILMAN3 = {
-}
