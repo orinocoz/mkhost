@@ -7,7 +7,7 @@ import sys
 
 import makehost.cfg
 
-def execute_cmd(cmdline):
+def execute_cmd_interactive(cmdline):
     cmd = " ".join(cmdline)
     logging.info(cmd)
     os.system(cmd)
@@ -21,11 +21,11 @@ def apt_get_cmd(*args):
                list(args)
 
 def update_pkgs():
-    execute_cmd(apt_get_cmd("update"))
-    execute_cmd(apt_get_cmd("upgrade"))
+    execute_cmd_interactive(apt_get_cmd("update"))
+    execute_cmd_interactive(apt_get_cmd("upgrade"))
 
 def install_pkg(pkgname):
-    execute_cmd(apt_get_cmd("install", pkgname))
+    execute_cmd_interactive(apt_get_cmd("install", pkgname))
 
 def configure_dovecot():
     install_pkg("dovecot-imapd")
