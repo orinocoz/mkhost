@@ -4,8 +4,7 @@ import logging
 import os
 import sys
 
-from cfg import DOVECOT
-from cfg import POSTFIX
+import cfg
 
 def execute_cmd(cmd):
     logging.info(cmd)
@@ -26,6 +25,8 @@ def install_postfix():
 if __name__ == "__main__":
     log_format = '[{asctime}] {levelname:8} {message}'
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format=log_format, style='{')
+
+    logging.info("cfg.DOVECOT = {}".format(cfg.DOVECOT))
 
     install_dovecot()
     install_postfix()
