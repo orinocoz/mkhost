@@ -26,8 +26,6 @@ if __name__ == "__main__":
     log_format = '[{asctime}] {levelname:8} {message}'
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG, format=log_format, style='{')
 
-    logging.info("cfg.DOVECOT = {}".format(cfg.DOVECOT))
-
     install_dovecot()
     install_postfix()
     # install_mailman3()
