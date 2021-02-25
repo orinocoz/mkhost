@@ -1,3 +1,7 @@
+# The configuration file.
+#
+#
+
 DOVECOT = {
 }
 
