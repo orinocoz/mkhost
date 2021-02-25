@@ -4,6 +4,9 @@ import logging
 import os
 import sys
 
+from cfg import DOVECOT
+from cfg import POSTFIX
+
 def execute_cmd(cmd):
     logging.info(cmd)
     os.system(cmd)
