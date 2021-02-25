@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 
-import cfg
+import makehost.cfg
 
 def execute_cmd(cmd):
     logging.info(cmd)
