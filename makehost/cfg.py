@@ -19,8 +19,11 @@ MY_HOST_DOMAIN = "my-domain.tld"
 # Hosted (virtual) domains.
 GUEST_DOMAINS = ["a-hosted.com", "b-hosted.org", "something-else.com"]
 
-# E-mail address mapping. A single address can be mapped to 1 or more other
-# addresses, possibly on multiple domains.
+# E-mail address mapping for mail forwarding. A single address can be mapped
+# to 1 or more other addresses, possibly on multiple domains.
+#
+# Note: you don't need to own those domains or mailboxes!
+#       You can forward anywhere.
 ADDRESS_MAP = {
     "alice@a-hosted.com"            : "bob@something-else.com",
     "bob@a-hosted.com"              : [ "alice@b-hosted.org", "bob@something-else.com" ],
