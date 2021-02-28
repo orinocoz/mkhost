@@ -11,7 +11,7 @@ import makehost.dovecot
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description='Re-configures this machine according to the configuration.',
+        description='Re-configures this machine according to the hardcoded configuration (cfg.py).',
         add_help=True, allow_abbrev=False, epilog="""This program comes with ABSOLUTELY NO WARRANTY.""")
 
     parser.add_argument("--doveconf",
