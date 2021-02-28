@@ -1,5 +1,7 @@
 from makehost.common import install_pkg, execute_cmd
 
+import makehost.dovecot_parser
+
 def configure_dovecot():
     install_pkg("dovecot-imapd")
     # TODO: improve this
