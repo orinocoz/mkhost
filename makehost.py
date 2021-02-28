@@ -52,4 +52,4 @@ if __name__ == "__main__":
 
     # Destructively re-configure the machine
     makehost.common.update_pkgs()
-    makehost.dovecot.configure_dovecot()
+    makehost.dovecot.configure_dovecot(args.doveconf)

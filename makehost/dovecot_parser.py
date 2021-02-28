@@ -12,14 +12,19 @@
 ##############################################################################
 
 import dataclasses
+import logging
 import os.path
+import re
 import typing
+
+re_blank   = re.compile('^\s*$', re.ASCII)
+re_comment = re.compile('^\s*\#.*$', re.ASCII)
 
 # A piece of configuration encountered in the file.
 @dataclasses.dataclass
 class Item:
     filename : str      # File where this is defined (full path)
-    lfirst   : int      # First line of this item
+    lfirst   : int      # First line of this item (1-based)
     lcnt     : int      # Number of lines this item spans
 
 # Whitespace-only line
@@ -97,3 +102,42 @@ class KeyValue(Item):
 class Section(Item):
     name     : str
     body     : typing.List[Item]
+
+# Parses a single configuration file. This is not recursive, i.e.
+# includes are not followed.
+#
+# Returns a pair: (list of Items, list of lines).
+#         The 1st can be shorter than the 2nd (not every line
+#         represents a top-level item).
+def parse_config_file(filename):
+    item_list = []
+    line_list = []
+
+    # read the whole file into memory
+    with open(filename) as f:
+        line_list = [x.strip() for x in f.readlines()]
+
+    for i, line in enumerate(line_list, start=1):
+        logging.debug("parse line: {}".format(line))
+
+        if re_blank.match(line):
+            item = BlankLine(filename=filename, lfirst=i, lcnt=1)
+        elif re_comment.match(line):
+            item = CommentLine(filename=filename, lfirst=i, lcnt=1)
+        else:
+            raise ValueError("Failed to read Dovecot configuration: syntax error in {} at line {}: {}".format(filename, i, line))
+
+        logging.debug("      ==>   {}".format(item))
+        item_list.append(item)
+
+    return (item_list, line_list)
+
+# Parses Dovecot configuration file. This is recursive, i.e.
+# !include and !include_try are followed.
+def parse_dovecot_config(filename):
+    filename = os.path.realpath(filename)
+    visited_files = set()
+
+    (items, lines) = parse_config_file(filename)
+    for it in items:
+        logging.debug("Item: {}".format(it))
