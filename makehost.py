@@ -14,6 +14,12 @@ if __name__ == "__main__":
         description='Re-configures this machine according to the configuration.',
         add_help=True, allow_abbrev=False, epilog="""This program comes with ABSOLUTELY NO WARRANTY.""")
 
+    parser.add_argument("--doveconf",
+                        metavar="FILE",
+                        required=False,
+                        default="/etc/dovecot/dovecot.conf",
+                        help="Dovecot configuration file; default: %(default)s")
+
     parser.add_argument("--batch",
                         required=False,
                         action="store_true",
