@@ -11,23 +11,24 @@
 #      are not supported.
 ##############################################################################
 
-from dataclasses import dataclass
-from typing import List
+import dataclasses
+import os.path
+import typing
 
 # A piece of configuration encountered in the file.
-@dataclass
+@dataclasses.dataclass
 class Item:
     filename : str      # File where this is defined (full path)
     lfirst   : int      # First line of this item
     lcnt     : int      # Number of lines this item spans
 
 # Whitespace-only line
-@dataclass
+@dataclasses.dataclass
 class BlankLine(Item):
     pass
 
 # A single line comment, starting with a hash (#)
-@dataclass
+@dataclasses.dataclass
 class CommentLine(Item):
     pass
 
@@ -36,7 +37,7 @@ class CommentLine(Item):
 # !include local.conf
 # !include /path/to/another.conf
 # !include conf.d/*.conf
-@dataclass
+@dataclasses.dataclass
 class Include(Item):
     what : str
 
@@ -45,14 +46,14 @@ class Include(Item):
 # !include_try local.conf
 # !include_try /path/to/another.conf
 # !include_try conf.d/*.conf
-@dataclass
+@dataclasses.dataclass
 class IncludeTry(Item):
     what : str
 
 # Right-hand-side value in a simple setting of the form:
 #
 # settings_key = settings_value
-@dataclass
+@dataclasses.dataclass
 class Value(Item):
     pass
 
@@ -65,21 +66,21 @@ class Value(Item):
 # <path/to/file
 #
 # (relative to the current file).
-@dataclass
+@dataclasses.dataclass
 class FromFile(Value):
     rfile : str
 
 # A string value. This can still contain variable expansion like:
 #
 # key2 = $key value2
-@dataclass
+@dataclasses.dataclass
 class StringValue(Value):
     s : str
 
 # A simple setting of the form:
 #
 # settings_key = settings_value
-@dataclass
+@dataclasses.dataclass
 class KeyValue(Item):
     key      : str
     value    : Value
@@ -92,7 +93,7 @@ class KeyValue(Item):
 #     subkey = subvalue
 #   }
 # }
-@dataclass
+@dataclasses.dataclass
 class Section(Item):
     name     : str
-    body     : List[Item]
+    body     : typing.List[Item]
