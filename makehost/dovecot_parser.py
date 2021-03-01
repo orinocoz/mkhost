@@ -37,22 +37,33 @@ class Item:
     lfirst   : int      # First line of this item (1-based)
     lcnt     : int      # Number of lines this item spans
 
+    INDENT_1 = '  '     # indentation
+
+    def __str__(self, indent=0):
+        return (self.INDENT_1 * indent) + "{}:{}-{}".format(filename, lfirst, lfirst+lcnt-1)
+
 # Whitespace-only line
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class BlankLine(Item):
-    pass
+
+    def __str__(self, indent=0):
+        return ""
 
 # A single line comment, starting with a hash (#)
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class CommentLine(Item):
-    pass
+
+    def __str__(self, indent=0):
+        return (self.INDENT_1 * indent) + "#"
 
 # Right-hand-side value in a simple setting of the form:
 #
 # settings_key = settings_value
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class Value(Item):
-    pass
+
+    def __str__(self, indent=0):
+        return (self.INDENT_1 * indent) + "<value>"
 
 # Value of the form:
 #
@@ -68,12 +79,18 @@ class Value(Item):
 class FromFile(Value):
     rfile : str
 
+    def __str__(self, indent=0):
+        return (self.INDENT_1 * indent) + "< {}".format(self.rfile)
+
 # A string value. This can still contain variable expansion like:
 #
 # key2 = $key value2
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class StringValue(Value):
     sval : str
+
+    def __str__(self, indent=0):
+        return (self.INDENT_1 * indent) + "{}".format(self.sval)
 
 # A simple setting of the form:
 #
@@ -82,6 +99,9 @@ class StringValue(Value):
 class KeyValue(Item):
     key      : str
     value    : Value
+
+    def __str__(self, indent=0):
+        return (self.INDENT_1 * indent) + "{} = {}".format(self.key, self.value)
 
 # A section with an optional name
 #
@@ -96,6 +116,14 @@ class Section(Item):
     sec_type : str          # "section"
     name     : str          # "optional_name"
     body     : typing.List[Item]
+
+    def __str__(self, indent=0):
+        return (self.INDENT_1 * indent) + "{} {} {{".format(self.sec_type, self.name or '') + os.linesep +  \
+                   ((self.INDENT_1 * indent) + os.linesep).join(                                            \
+                       map(lambda x: x.__str__(indent=indent+1),                                            \
+                           filter(lambda x: not isinstance(x, (BlankLine, CommentLine)), self.body)))   +   \
+                   (self.INDENT_1 * indent) + os.linesep +                                                  \
+                   (self.INDENT_1 * indent) + "}"
 
 # Parses an !include or !include_try statement.
 #
@@ -220,6 +248,8 @@ def parse_dovecot_config(filename):
     parsed_files = dict()
 
     (items, lines) = parse_config_file(filename, False, parsed_files, frozenset())
-    for it in items:
-        if not isinstance(it, (BlankLine, CommentLine)):
-            logging.debug("Item: {}".format(it))
+
+    pretty_str = os.linesep.join(
+        map(lambda x: "{}".format(x),
+            filter(lambda x: not isinstance(x, (BlankLine, CommentLine)), items)))
+    logging.debug(pretty_str)
