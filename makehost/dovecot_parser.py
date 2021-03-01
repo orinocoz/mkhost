@@ -19,6 +19,7 @@ import typing
 
 re_blank        = re.compile('^\s*$', re.ASCII)
 re_comment      = re.compile('^\s*\#.*$', re.ASCII)
+re_include      = re.compile('^\s*\!include\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
 re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
 re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
 re_section_close= re.compile('^\s*\}\s*$', re.ASCII)
@@ -147,12 +148,16 @@ def parse_config_file(filename):
             if m:
                 item = IncludeTry(filename=filename, lfirst=i, lcnt=1, what=m.group(1))
             else:
-                m = re_section_anon.match(line)
+                m = re_include.match(line)
                 if m:
-                    # open a new section
-                    section_stack.insert(0, (i, None, []))
+                    item = Include(filename=filename, lfirst=i, lcnt=1, what=m.group(1))
                 else:
-                    raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
+                    m = re_section_anon.match(line)
+                    if m:
+                        # open a new section
+                        section_stack.insert(0, (i, None, []))
+                    else:
+                        raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
 
         # append the item to the last open section
         if item:
