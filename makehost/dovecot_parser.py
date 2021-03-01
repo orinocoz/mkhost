@@ -17,9 +17,10 @@ import os.path
 import re
 import typing
 
-re_blank       = re.compile('^\s*$', re.ASCII)
-re_comment     = re.compile('^\s*\#.*$', re.ASCII)
-re_include_try = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
+re_blank        = re.compile('^\s*$', re.ASCII)
+re_comment      = re.compile('^\s*\#.*$', re.ASCII)
+re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
+re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
 
 # A piece of configuration encountered in the file.
 @dataclasses.dataclass
@@ -130,7 +131,11 @@ def parse_config_file(filename):
             if m:
                 item = IncludeTry(filename=filename, lfirst=i, lcnt=1, what=m.group(1))
             else:
-                raise ValueError("Failed to read Dovecot configuration: syntax error in {} at line {}: {}".format(filename, i, line))
+                m = re_section_anon.match(line)
+                if m:
+                    item = Section(filename=filename, lfirst=i, lcnt=1, name=None, body=[])
+                else:
+                    raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
 
         logging.debug("              ==> {}".format(item))
         item_list.append(item)
