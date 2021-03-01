@@ -21,6 +21,7 @@ re_blank        = re.compile('^\s*$', re.ASCII)
 re_comment      = re.compile('^\s*\#.*$', re.ASCII)
 re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
 re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
+re_section_close= re.compile('^\s*\}\s*$', re.ASCII)
 
 # A piece of configuration encountered in the file.
 #
@@ -114,20 +115,33 @@ class Section(Item):
 #         The 1st can be shorter than the 2nd (not every line
 #         represents a top-level item).
 def parse_config_file(filename):
-    item_list = []
     line_list = []
 
     # read the whole file into memory
     with open(filename) as f:
         line_list = [x.strip() for x in f.readlines()]
 
+    # Stack of open sections (which grows at the head, i.e. new items are
+    # prepended at the beginning).
+    # Each item is a tuple: (lfirst, name, list of Item).
+    # Last item is a sentinel which represents the whole file.
+    section_stack = [(1, filename, [])]
+
     for i, line in enumerate(line_list, start=1):
         logging.debug("parse line {: 5d}: {}".format(i, line))
+        item = None
 
         if re_blank.match(line):
             item = BlankLine(filename=filename, lfirst=i, lcnt=1)
         elif re_comment.match(line):
             item = CommentLine(filename=filename, lfirst=i, lcnt=1)
+        elif re_section_close.match(line):
+            # close the current section
+            if (2 <= len(section_stack)):
+                csec = section_stack.pop(0)
+                item = Section(filename=filename, lfirst=csec[0], lcnt=(i+1-csec[0]), name=csec[1], body=csec[2])
+            else:
+                raise ValueError("Error parsing Dovecot configuration: unexpected section end at {}:{}: {}".format(filename, i, line))
         else:
             m = re_include_try.match(line)
             if m:
@@ -135,14 +149,17 @@ def parse_config_file(filename):
             else:
                 m = re_section_anon.match(line)
                 if m:
-                    item = Section(filename=filename, lfirst=i, lcnt=1, name=None, body=[])
+                    # open a new section
+                    section_stack.insert(0, (i, None, []))
                 else:
                     raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
 
-        logging.debug("              ==> {}".format(item))
-        item_list.append(item)
+        # append the item to the last open section
+        if item:
+            logging.debug("              ==> {}".format(item))
+            section_stack[0][2].append(item)
 
-    return (item_list, line_list)
+    return (section_stack[-1][2], line_list)
 
 # Parses Dovecot configuration file. This is recursive, i.e.
 # !include and !include_try are followed.
