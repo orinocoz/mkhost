@@ -22,10 +22,10 @@ re_blank        = re.compile('^\s*$', re.ASCII)
 re_comment      = re.compile('^\s*\#.*$', re.ASCII)
 re_setting      = re.compile('^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$', re.ASCII)
 re_from_file    = re.compile('^\s*\<([-A-Za-z0-9_]+)\s*$', re.ASCII)
-re_include      = re.compile('^\s*\!include\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
-re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
+re_include      = re.compile('^\s*\!include\s+([-A-Za-z0-9_,.?!()*/]+)\s*$', re.ASCII)
+re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)\s*$', re.ASCII)
 re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
-re_section_named= re.compile('^\s*([-A-Za-z0-9_]+)\s*([-" !A-Za-z0-9_/]+)\s*\{\s*$', re.ASCII)
+re_section_named= re.compile('^\s*([-A-Za-z0-9_]+)\s+([-" !A-Za-z0-9_/]+?)\s*\{\s*$', re.ASCII)
 re_section_close= re.compile('^\s*\}\s*$', re.ASCII)
 
 # A piece of configuration encountered in the file.
@@ -93,7 +93,8 @@ class KeyValue(Item):
 # }
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class Section(Item):
-    name     : str
+    sec_type : str          # "section"
+    name     : str          # "optional_name"
     body     : typing.List[Item]
 
 # Parses an !include or !include_try statement.
@@ -103,7 +104,9 @@ class Section(Item):
 #
 # Returns: a concatenated list of Item.
 def parse_include(filename, include_pattern, incl_try, parsed_files, visited_files):
-    logging.debug("parse dovecot include{} in {}: {}".format("_try" if incl_try else "    ", filename, include_pattern))
+    indent = "  " * len(visited_files)
+    logging.debug("{}parse dovecot include{} in {}: {}".format(indent, "_try" if incl_try else "    ", filename, include_pattern))
+    logging.debug("{}visited_files: {}".format(indent, ", ".join(visited_files)))
 
     dirname     = os.path.dirname(filename)
     pattern_abs = os.path.join(dirname, include_pattern)    # works even if include_pattern is absolute!
@@ -130,7 +133,9 @@ def parse_include(filename, include_pattern, incl_try, parsed_files, visited_fil
 #         represents a top-level item).
 def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
     filename = os.path.realpath(filename)       # canonicalize the file name
-    logging.debug("parse dovecot config file: {}".format(filename))
+    indent   = "  " * len(visited_files)
+    logging.debug("{}parse dovecot config file: {}".format(indent, filename))
+    logging.debug("{}visited_files: {}".format(indent, ", ".join(visited_files)))
 
     if filename in visited_files:
         raise ValueError("Error parsing Dovecot configuration: cyclic include: {}".format(filename))
@@ -144,12 +149,12 @@ def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
 
     # Stack of open sections (which grows at the head, i.e. new items are
     # prepended at the beginning).
-    # Each item is a tuple: (lfirst, name, list of Item).
+    # Each item is a tuple: (lfirst, sec_type, name, list of Item).
     # Last item is a sentinel which represents the whole file.
-    section_stack = [(1, filename, [])]
+    section_stack = [(1, None, filename, [])]
 
     for i, line in enumerate(line_list, start=1):
-        logging.debug("parse line {: 5d}: {}".format(i, line))
+        logging.debug("{}parse line {: 5d}: {}".format(indent, i, line))
         item = None
 
         if re_blank.match(line):
@@ -160,7 +165,7 @@ def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
             # close the current section
             if (2 <= len(section_stack)):
                 csec = section_stack.pop(0)
-                item = Section(filename=filename, lfirst=csec[0], lcnt=(i+1-csec[0]), name=csec[1], body=csec[2])
+                item = Section(filename=filename, lfirst=csec[0], lcnt=(i+1-csec[0]), sec_type=csec[1], name=csec[2], body=csec[3])
             else:
                 raise ValueError("Error parsing Dovecot configuration: unexpected section end at {}:{}: {}".format(filename, i, line))
         else:
@@ -171,8 +176,8 @@ def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
                 ignore_errors = False
             if m:
                 include_pattern = m.group(1)
-                included_items  = parse_include(filename, include_pattern, ignore_errors, parsed_files, visited_files.union(filename))
-                section_stack[0][2].extend(included_items)
+                included_items  = parse_include(filename, include_pattern, ignore_errors, parsed_files, visited_files.union([filename]))
+                section_stack[0][3].extend(included_items)
             else:
                 m = re_section_anon.match(line)
                 sec_name = None
@@ -182,7 +187,7 @@ def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
                         sec_name = m.group(2)
                 if m:
                     # open a new section
-                    section_stack.insert(0, (i, sec_name, []))
+                    section_stack.insert(0, (i, m.group(1), sec_name, []))
                 else:
                     m = re_setting.match(line)
                     if m:
@@ -201,10 +206,11 @@ def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
 
         # append item to the last open section
         if item:
-            logging.debug("              ==> {}".format(item))
-            section_stack[0][2].append(item)
+            if not isinstance(item, (BlankLine, CommentLine)):
+                logging.debug("{}              ==> {}".format(indent, item))
+            section_stack[0][3].append(item)
 
-    parsed_files[filename] = (section_stack[-1][2], line_list)
+    parsed_files[filename] = (section_stack[-1][3], line_list)
     return parsed_files[filename]
 
 # Parses Dovecot configuration file. This is recursive, i.e. !include and !include_try are followed.
@@ -215,4 +221,5 @@ def parse_dovecot_config(filename):
 
     (items, lines) = parse_config_file(filename, False, parsed_files, frozenset())
     for it in items:
-        logging.debug("Item: {}".format(it))
+        if not isinstance(it, (BlankLine, CommentLine)):
+            logging.debug("Item: {}".format(it))
