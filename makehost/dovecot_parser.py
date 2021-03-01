@@ -18,15 +18,15 @@ import os.path
 import re
 import typing
 
-re_blank        = re.compile('^\s*$', re.ASCII)
-re_comment      = re.compile('^\s*\#.*$', re.ASCII)
-re_setting      = re.compile('^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$', re.ASCII)
-re_from_file    = re.compile('^\s*\<([-A-Za-z0-9_]+)\s*$', re.ASCII)
-re_include      = re.compile('^\s*\!include\s+([-A-Za-z0-9_,.?!()*/]+)\s*$', re.ASCII)
-re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)\s*$', re.ASCII)
-re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
-re_section_named= re.compile('^\s*([-A-Za-z0-9_]+)\s+([-" !A-Za-z0-9_/]+?)\s*\{\s*$', re.ASCII)
-re_section_close= re.compile('^\s*\}\s*$', re.ASCII)
+re_blank         = re.compile('^\s*$', re.ASCII)
+re_comment       = re.compile('^\s*\#.*$', re.ASCII)
+re_setting       = re.compile('^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$', re.ASCII)
+re_from_file     = re.compile('^\s*\<([-A-Za-z0-9_]+)\s*$', re.ASCII)
+re_include       = re.compile('^\s*\!include\s+([-A-Za-z0-9_,.?!()*/]+)\s*$', re.ASCII)
+re_include_try   = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)\s*$', re.ASCII)
+re_section_anon  = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
+re_section_named = re.compile('^\s*([-A-Za-z0-9_]+)\s+([-" !A-Za-z0-9_/]+?)\s*\{\s*$', re.ASCII)
+re_section_close = re.compile('^\s*\}\s*$', re.ASCII)
 
 # A piece of configuration encountered in the file.
 #
