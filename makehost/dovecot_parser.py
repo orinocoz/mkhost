@@ -168,10 +168,31 @@ def parse_config_file(filename):
 
 # Parses Dovecot configuration file. This is recursive, i.e.
 # !include and !include_try are followed.
-def parse_dovecot_config(filename):
+#
+# Params:
+#   visited_files: a dictionary of visited files. This is a
+#                  mapping from the canonicalized filename
+#                  to a tuple: (list of Item, list of lines).
+#
+# Returns a pair: (list of Items, list of lines).
+def parse_config(filename, visited_files):
+    # First, canonicalize the file name
     filename = os.path.realpath(filename)
-    visited_files = set()
+    if filename not in visited_files:
+        (items, lines) = parse_config_file(filename)
+        visited_files[filename] = (items, lines)
+    return visited_files[filename]
 
-    (items, lines) = parse_config_file(filename)
+# Parses Dovecot configuration file. This is recursive, i.e.
+# !include and !include_try are followed.
+def parse_dovecot_config(filename):
+    # First, canonicalize the file name
+    filename = os.path.realpath(filename)
+
+    # A dictionary of visited files. Each of them is mapped
+    # onto a tuple: (list of lines, list of Item).
+    visited_files = dict()
+
+    (items, lines) = parse_config(filename, visited_files)
     for it in items:
         logging.debug("Item: {}".format(it))
