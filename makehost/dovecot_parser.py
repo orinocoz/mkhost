@@ -25,6 +25,7 @@ re_from_file    = re.compile('^\s*\<([-A-Za-z0-9_]+)\s*$', re.ASCII)
 re_include      = re.compile('^\s*\!include\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
 re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
 re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
+re_section_named= re.compile('^\s*([-A-Za-z0-9_]+)\s*([-" !A-Za-z0-9_/]+)\s*\{\s*$', re.ASCII)
 re_section_close= re.compile('^\s*\}\s*$', re.ASCII)
 
 # A piece of configuration encountered in the file.
@@ -174,9 +175,14 @@ def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
                 section_stack[0][2].extend(included_items)
             else:
                 m = re_section_anon.match(line)
+                sec_name = None
+                if not m:
+                    m = re_section_named.match(line)
+                    if m:
+                        sec_name = m.group(2)
                 if m:
                     # open a new section
-                    section_stack.insert(0, (i, None, []))
+                    section_stack.insert(0, (i, sec_name, []))
                 else:
                     m = re_setting.match(line)
                     if m:
