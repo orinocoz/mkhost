@@ -23,19 +23,21 @@ re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', r
 re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
 
 # A piece of configuration encountered in the file.
-@dataclasses.dataclass
+#
+# frozen=True => this is immutable.
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class Item:
     filename : str      # File where this is defined (full path)
     lfirst   : int      # First line of this item (1-based)
     lcnt     : int      # Number of lines this item spans
 
 # Whitespace-only line
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class BlankLine(Item):
     pass
 
 # A single line comment, starting with a hash (#)
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class CommentLine(Item):
     pass
 
@@ -44,7 +46,7 @@ class CommentLine(Item):
 # !include local.conf
 # !include /path/to/another.conf
 # !include conf.d/*.conf
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class Include(Item):
     what : str
 
@@ -53,14 +55,14 @@ class Include(Item):
 # !include_try local.conf
 # !include_try /path/to/another.conf
 # !include_try conf.d/*.conf
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class IncludeTry(Item):
     what : str
 
 # Right-hand-side value in a simple setting of the form:
 #
 # settings_key = settings_value
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class Value(Item):
     pass
 
@@ -73,21 +75,21 @@ class Value(Item):
 # <path/to/file
 #
 # (relative to the current file).
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class FromFile(Value):
     rfile : str
 
 # A string value. This can still contain variable expansion like:
 #
 # key2 = $key value2
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class StringValue(Value):
     s : str
 
 # A simple setting of the form:
 #
 # settings_key = settings_value
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class KeyValue(Item):
     key      : str
     value    : Value
@@ -100,7 +102,7 @@ class KeyValue(Item):
 #     subkey = subvalue
 #   }
 # }
-@dataclasses.dataclass
+@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class Section(Item):
     name     : str
     body     : typing.List[Item]
