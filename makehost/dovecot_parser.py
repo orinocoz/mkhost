@@ -12,6 +12,7 @@
 ##############################################################################
 
 import dataclasses
+import glob
 import logging
 import os.path
 import re
@@ -42,24 +43,6 @@ class BlankLine(Item):
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class CommentLine(Item):
     pass
-
-# include statement, for example:
-#
-# !include local.conf
-# !include /path/to/another.conf
-# !include conf.d/*.conf
-@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
-class Include(Item):
-    what : str
-
-# include_try statement, for example:
-#
-# !include_try local.conf
-# !include_try /path/to/another.conf
-# !include_try conf.d/*.conf
-@dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
-class IncludeTry(Item):
-    what : str
 
 # Right-hand-side value in a simple setting of the form:
 #
@@ -109,16 +92,44 @@ class Section(Item):
     name     : str
     body     : typing.List[Item]
 
-# Parses a single configuration file. This is not recursive, i.e.
-# includes are not followed.
+# Parses an !include or !include_try statement.
+#
+# Params:
+#   incl_try : True if !include_try, False otherwise.
+def parse_include(filename, include_pattern, incl_try, parsed_files, visited_files):
+    logging.debug("parse dovecot include{} in {}: {}".format("_try" if incl_try else "    ", filename, include_pattern))
+
+    dirname     = os.path.dirname(filename)
+    pattern_abs = os.path.join(dirname, include_pattern)    # works even if include_pattern is absolute!
+    filelist    = sorted(glob.glob(pattern_abs, recursive=False))
+
+    for f in filelist:
+        parse_config_file(f, incl_try, parsed_files, visited_files)
+
+# Parses a single configuration file. This is recursive, i.e. !include and !include_try are followed.
+#
+# Params:
+#
+#   ignore_io_errors : whether to ignore non-existent or inaccessible files
+#   parsed_files     : a map of: filename -> (item list, line list).
+#                      These are the completed files.
+#   visited_files    : a (frozen) set of files visited in this recursive
+#                      call
 #
 # Returns a pair: (list of Items, list of lines).
 #         The 1st can be shorter than the 2nd (not every line
 #         represents a top-level item).
-def parse_config_file(filename):
-    line_list = []
+def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
+    filename = os.path.realpath(filename)       # canonicalize the file name
+    logging.debug("parse dovecot config file: {}".format(filename))
+
+    if filename in visited_files:
+        raise ValueError("Error parsing Dovecot configuration: cyclic include: {}".format(filename))
+    if filename in parsed_files:
+        return parsed_files[filename]
 
     # read the whole file into memory
+    line_list = []
     with open(filename) as f:
         line_list = [x.strip() for x in f.readlines()]
 
@@ -145,54 +156,36 @@ def parse_config_file(filename):
                 raise ValueError("Error parsing Dovecot configuration: unexpected section end at {}:{}: {}".format(filename, i, line))
         else:
             m = re_include_try.match(line)
-            if m:
-                item = IncludeTry(filename=filename, lfirst=i, lcnt=1, what=m.group(1))
-            else:
+            ignore_errors = True
+            if not m:
                 m = re_include.match(line)
+                ignore_errors = False
+            if m:
+                include_pattern = m.group(1)
+                included_items  = parse_include(filename, include_pattern, ignore_errors, parsed_files, visited_files.union(filename))
+                section_stack[0][2].extend(included_items)
+            else:
+                m = re_section_anon.match(line)
                 if m:
-                    item = Include(filename=filename, lfirst=i, lcnt=1, what=m.group(1))
+                    # open a new section
+                    section_stack.insert(0, (i, None, []))
                 else:
-                    m = re_section_anon.match(line)
-                    if m:
-                        # open a new section
-                        section_stack.insert(0, (i, None, []))
-                    else:
-                        raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
+                    raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
 
-        # append the item to the last open section
+        # append item to the last open section
         if item:
             logging.debug("              ==> {}".format(item))
             section_stack[0][2].append(item)
 
-    return (section_stack[-1][2], line_list)
+    parsed_files[filename] = (section_stack[-1][2], line_list)
+    return parsed_files[filename]
 
-# Parses Dovecot configuration file. This is recursive, i.e.
-# !include and !include_try are followed.
-#
-# Params:
-#   visited_files: a dictionary of visited files. This is a
-#                  mapping from the canonicalized filename
-#                  to a tuple: (list of Item, list of lines).
-#
-# Returns a pair: (list of Items, list of lines).
-def parse_config(filename, visited_files):
-    # First, canonicalize the file name
-    filename = os.path.realpath(filename)
-    if filename not in visited_files:
-        (items, lines) = parse_config_file(filename)
-        visited_files[filename] = (items, lines)
-    return visited_files[filename]
-
-# Parses Dovecot configuration file. This is recursive, i.e.
-# !include and !include_try are followed.
+# Parses Dovecot configuration file. This is recursive, i.e. !include and !include_try are followed.
 def parse_dovecot_config(filename):
-    # First, canonicalize the file name
-    filename = os.path.realpath(filename)
-
-    # A dictionary of visited files. Each of them is mapped
+    # A dictionary of parsed files. Each of them is mapped
     # onto a tuple: (list of lines, list of Item).
-    visited_files = dict()
+    parsed_files = dict()
 
-    (items, lines) = parse_config(filename, visited_files)
+    (items, lines) = parse_config_file(filename, False, parsed_files, frozenset())
     for it in items:
         logging.debug("Item: {}".format(it))
