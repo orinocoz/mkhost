@@ -20,6 +20,8 @@ import typing
 
 re_blank        = re.compile('^\s*$', re.ASCII)
 re_comment      = re.compile('^\s*\#.*$', re.ASCII)
+re_setting      = re.compile('^\s*([A-Za-z0-9_]+)\s*=\s*(.*?)\s*$', re.ASCII)
+re_from_file    = re.compile('^\s*\<([-A-Za-z0-9_]+)\s*$', re.ASCII)
 re_include      = re.compile('^\s*\!include\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
 re_include_try  = re.compile('^\s*\!include\_try\s+([-A-Za-z0-9_,.?!()*/]+)$', re.ASCII)
 re_section_anon = re.compile('^\s*([-A-Za-z0-9_]+)\s*\{\s*$', re.ASCII)
@@ -60,6 +62,7 @@ class Value(Item):
 # <path/to/file
 #
 # (relative to the current file).
+# rfile is the canonizalized filename (os.path.realpath).
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class FromFile(Value):
     rfile : str
@@ -69,7 +72,7 @@ class FromFile(Value):
 # key2 = $key value2
 @dataclasses.dataclass(init=True, repr=True, eq=True, frozen=True)
 class StringValue(Value):
-    s : str
+    sval : str
 
 # A simple setting of the form:
 #
@@ -96,15 +99,20 @@ class Section(Item):
 #
 # Params:
 #   incl_try : True if !include_try, False otherwise.
+#
+# Returns: a concatenated list of Item.
 def parse_include(filename, include_pattern, incl_try, parsed_files, visited_files):
     logging.debug("parse dovecot include{} in {}: {}".format("_try" if incl_try else "    ", filename, include_pattern))
 
     dirname     = os.path.dirname(filename)
     pattern_abs = os.path.join(dirname, include_pattern)    # works even if include_pattern is absolute!
     filelist    = sorted(glob.glob(pattern_abs, recursive=False))
+    item_list   = []
 
     for f in filelist:
-        parse_config_file(f, incl_try, parsed_files, visited_files)
+        item_list.extend(parse_config_file(f, incl_try, parsed_files, visited_files)[0])
+
+    return item_list
 
 # Parses a single configuration file. This is recursive, i.e. !include and !include_try are followed.
 #
@@ -170,7 +178,20 @@ def parse_config_file(filename, ignore_io_errors, parsed_files, visited_files):
                     # open a new section
                     section_stack.insert(0, (i, None, []))
                 else:
-                    raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
+                    m = re_setting.match(line)
+                    if m:
+                        skey   = m.group(1)
+                        svalue = m.group(2)
+
+                        m2 = re_from_file.match(svalue)
+                        if m2:
+                            target_file = os.path.join(filename, m2.group(1))   # works even if target file path is absolute!
+                            target_file = os.path.realpath(target_file)
+                            item = KeyValue(filename=filename, lfirst=i, lcnt=1, key=skey, value=FromFile(filename=filename, lfirst=i, lcnt=1, rfile=target_file))
+                        else:
+                            item = KeyValue(filename=filename, lfirst=i, lcnt=1, key=skey, value=StringValue(filename=filename, lfirst=i, lcnt=1, sval=svalue))
+                    else:
+                        raise ValueError("Error parsing Dovecot configuration: unknown syntax at {}:{}: {}".format(filename, i, line))
 
         # append item to the last open section
         if item:
