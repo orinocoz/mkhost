@@ -4,20 +4,22 @@
 # Edit below as needed.
 ##############################################################################
 #
-# A simple, 1-component hostname of the target machine. This should correspond
-# to your DNS.
+# A simple, 1-component hostname of the target machine.
 MY_HOST_NAME = "my-host"
 
 # Domain of the target machine, without the hostname.
 #
-# Thus, the fully-qualified domain name of the target machine is:
+# Thus, the FQDN (fully-qualified domain name) of the target machine will be:
 #
 #   MY_HOST_NAME . MY_HOST_DOMAIN
 #
 # This FQDN will be used to obtain Let's Encrypt certificate.
+# This must correspond to your DNS.
 MY_HOST_DOMAIN = "my-domain.tld"
 
-# Hosted (virtual) domains.
+# Hosted (virtual) mail domains. MX DNS record for each of them should point
+# to MY_HOST_NAME . MY_HOST_DOMAIN . You can setup CNAME records too, if you
+# like (not required for mail).
 GUEST_DOMAINS = ["a-hosted.com", "b-hosted.org", "something-else.com"]
 
 # E-mail address mapping for mail forwarding. A single address can be mapped
