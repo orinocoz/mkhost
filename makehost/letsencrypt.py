@@ -1,7 +1,7 @@
 import makehost.cfg
 import makehost.common
 
-# installs Let's Encrypt's certificate
+# Installs Let's Encrypt's certificate.
 def install():
     makehost.common.install_pkgs(["certbot", "python3-certbot-apache"])
     makehost.common.execute_cmd_interactive(                                                                            \

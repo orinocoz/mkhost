@@ -6,11 +6,11 @@ import makehost.common
 
 re_mkhost_header = re.compile('^# makehost config created at [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}\+[0-9]{2}:[0-9]{2}$', re.ASCII)
 
-# Installs and configures Dovecot on the current machine.
+# Installs and configures Dovecot.
 #
 # Params:
 #   doveconf : path to dovecot configuration file
-def configure_dovecot(doveconf):
+def install(doveconf):
     makehost.common.install_pkgs(["dovecot-imapd"])
 
     with open(doveconf) as f:
