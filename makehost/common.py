@@ -6,21 +6,33 @@ import subprocess
 # Common settings
 ##############################################################################
 
-dry_run         = True
-verbose         = False
-non_interactive = False
+_dry_run         = True
+_verbose         = False
+_non_interactive = False
+
+def get_dry_run():
+    return _dry_run
 
 def set_dry_run(b):
-    global dry_run
-    dry_run = bool(b)
+    global _dry_run
+    _dry_run = bool(b)
+    logging.debug("_dry_run: {}".format(_dry_run))
+
+def get_non_interactive():
+    return _non_interactive
 
 def set_non_interactive(b):
-    global non_interactive
-    non_interactive = bool(b)
+    global _non_interactive
+    _non_interactive = bool(b)
+    logging.debug("_non_interactive: {}".format(_non_interactive))
+
+def get_verbose():
+    return _verbose
 
 def set_verbose(b):
-    global verbose
-    verbose = bool(b)
+    global _verbose
+    _verbose = bool(b)
+    logging.debug("_verbose: {}".format(_verbose))
 
 ##############################################################################
 # Common functions
@@ -46,8 +58,8 @@ def execute_cmd(cmdline):
 # A list.
 def apt_get_cmd(*args):
     return ["apt-get"]                                    +       \
-               (["--dry-run"] if dry_run         else []) +       \
-               (["--yes"]     if non_interactive else []) +       \
+               (["--dry-run"] if get_dry_run()         else []) +       \
+               (["--yes"]     if get_non_interactive() else []) +       \
                list(args)
 
 def update_pkgs():
