@@ -11,7 +11,7 @@ re_mkhost_header = re.compile('^# makehost config created at [0-9]{4}-[0-9]{2}-[
 # Params:
 #   doveconf : path to dovecot configuration file
 def configure_dovecot(doveconf):
-    makehost.common.install_pkg("dovecot-imapd")
+    makehost.common.install_pkgs(["dovecot-imapd"])
 
     with open(doveconf) as f:
         for line in f:

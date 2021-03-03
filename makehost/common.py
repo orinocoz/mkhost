@@ -57,7 +57,7 @@ def execute_cmd(cmdline):
 # Returns the apt-get command with some default arguments applied.
 # A list.
 def apt_get_cmd(*args):
-    return ["apt-get"]                                    +       \
+    return ["apt-get"]                                          +       \
                (["--dry-run"] if get_dry_run()         else []) +       \
                (["--yes"]     if get_non_interactive() else []) +       \
                list(args)
@@ -66,5 +66,6 @@ def update_pkgs():
     execute_cmd_interactive(apt_get_cmd("update"))
     execute_cmd_interactive(apt_get_cmd("upgrade"))
 
-def install_pkg(pkgname):
-    execute_cmd_interactive(apt_get_cmd("install", pkgname))
+def install_pkgs(pkgs):
+    if pkgs:
+        execute_cmd_interactive(apt_get_cmd("install", *pkgs))

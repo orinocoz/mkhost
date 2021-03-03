@@ -7,6 +7,7 @@ import sys
 import makehost.cfg
 import makehost.common
 import makehost.dovecot
+import makehost.letsencrypt
 
 if __name__ == "__main__":
 
@@ -52,4 +53,5 @@ if __name__ == "__main__":
 
     # Destructively re-configure the machine
     makehost.common.update_pkgs()
+    makehost.letsencrypt.install()
     makehost.dovecot.configure_dovecot(args.doveconf)

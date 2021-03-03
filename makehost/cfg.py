@@ -6,7 +6,7 @@
 #
 # A simple, 1-component hostname of the target machine. This should correspond
 # to your DNS.
-MY_HOST_NAME = "host"
+MY_HOST_NAME = "my-host"
 
 # Domain of the target machine, without the hostname.
 #
@@ -14,6 +14,7 @@ MY_HOST_NAME = "host"
 #
 #   MY_HOST_NAME . MY_HOST_DOMAIN
 #
+# This FQDN will be used to obtain Let's Encrypt certificate.
 MY_HOST_DOMAIN = "my-domain.tld"
 
 # Hosted (virtual) domains.
