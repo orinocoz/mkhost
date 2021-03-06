@@ -4,10 +4,10 @@ import argparse
 import logging
 import sys
 
-import makehost.cfg
-import makehost.common
-import makehost.dovecot
-import makehost.letsencrypt
+import mkhost.cfg
+import mkhost.common
+import mkhost.dovecot
+import mkhost.letsencrypt
 
 if __name__ == "__main__":
 
@@ -47,11 +47,11 @@ if __name__ == "__main__":
     logging.basicConfig(stream=sys.stderr, level=(logging.DEBUG if args.verbose else logging.INFO), format=log_format, style='{')
 
     # Setup global variables
-    makehost.common.set_verbose(args.verbose)
-    makehost.common.set_dry_run(args.dry_run)
-    makehost.common.set_non_interactive(args.batch)
+    mkhost.common.set_verbose(args.verbose)
+    mkhost.common.set_dry_run(args.dry_run)
+    mkhost.common.set_non_interactive(args.batch)
 
     # Destructively re-configure the machine
-    makehost.common.update_pkgs()
-    makehost.letsencrypt.install()
-    makehost.dovecot.install(args.doveconf)
+    mkhost.common.update_pkgs()
+    mkhost.letsencrypt.install()
+    mkhost.dovecot.install(args.doveconf)

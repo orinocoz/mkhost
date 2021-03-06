@@ -1,4 +1,4 @@
-# Declarative, idempotent mail server configuration script
+# Declarative, idempotent mail server configuration script (work in progress)
 
 Postfix, Dovecot, Mailman3
 
@@ -9,5 +9,5 @@ Postfix, Dovecot, Mailman3
 3. Login to the remote host and run:
 
    ```
-   makehost.py
+   mkhost.py
    ```
