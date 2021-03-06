@@ -3,7 +3,7 @@
 #
 # Edit below as needed.
 ##############################################################################
-#
+
 # A simple, 1-component hostname of the target machine.
 MY_HOST_NAME = "my-host"
 
@@ -33,3 +33,12 @@ ADDRESS_MAP = {
     "bob.lastname@b-hosted.org"     : "bob@b-hosted.org",
     "mailtunnel@something-else.com" : "astray@gmail.com"
 }
+
+# List of mail protocols to enable in Dovecot. This is mapped directly to
+# https://doc.dovecot.org/settings/core/#protocols
+DOVECOT_PROTOCOLS = ["imap", "pop3"]
+
+# Whether Dovecot should listen on all interfaces (False) or just the
+# localhost (True). If all your users are local, then setting this to
+# True will improve security.
+DOVECOT_LOOPBACK_ONLY = False
