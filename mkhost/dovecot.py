@@ -5,7 +5,8 @@ import re
 import mkhost.common
 import mkhost.cfg
 
-re_mkhost_header = re.compile('^# mkhost config created at [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}\+[0-9]{2}:[0-9]{2}$', re.ASCII)
+re_mkhost_header = re.compile(
+    '^# mkhost ([0-9]+)\.([0-9]+) config created at [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}\+[0-9]{2}:[0-9]{2}$', re.ASCII)
 
 # Installs and configures Dovecot.
 #
@@ -16,16 +17,19 @@ def install(doveconf):
 
     with open(doveconf) as f:
         for line in f:
-            if re_mkhost_header.match(line):
-                logging.debug("mkhost dovecot configuration header line already exists: {}".format(line))
-                return
+            m = re_mkhost_header.match(line)
+            if m:
+                mver = (int(m.group(1)), int(m.group(2)))
+                logging.info("Found mkhost {}.{} dovecot configuration header".format(mver[0], mver[1]))
+                if (mkhost.common.get_version() <= mver):
+                    return
 
     # append new configuration to the main config file
     ts = datetime.datetime.now(datetime.timezone.utc)
 
     configuration = """
 ########################################################################
-# mkhost config created at {}
+# mkhost {}.{} config created at {}
 ########################################################################
 
 # Kill all clients when Dovecot master process shuts down.
@@ -46,7 +50,10 @@ auth_verbose = yes
 verbose_ssl  = yes
 
 protocols    = {}
-""".format(ts.isoformat(), " ".join(mkhost.cfg.DOVECOT_PROTOCOLS))
+""".format(mkhost.common._version_major,
+           mkhost.common._version_minor,
+           ts.isoformat(),
+           " ".join(mkhost.cfg.DOVECOT_PROTOCOLS))
 
     # Listen on the loopback address only
     if mkhost.cfg.DOVECOT_LOOPBACK_ONLY:

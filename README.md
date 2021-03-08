@@ -13,5 +13,3 @@ Postfix, Dovecot, Mailman3
    ```
 
 # TODO
-
-1. add version, then write it out to the generated configuration (dovecot)

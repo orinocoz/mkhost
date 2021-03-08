@@ -6,9 +6,15 @@ import subprocess
 # Common settings
 ##############################################################################
 
+_version_major   = 0
+_version_minor   = 1
 _dry_run         = True
 _verbose         = False
 _non_interactive = False
+
+# Returns the version number as a pair (major, minor)
+def get_version():
+    return (_version_major, _version_minor)
 
 def get_dry_run():
     return _dry_run
