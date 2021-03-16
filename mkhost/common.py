@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import subprocess
@@ -11,6 +12,7 @@ _version_minor   = 1
 _dry_run         = True
 _verbose         = False
 _non_interactive = False
+_run_ts          = datetime.datetime.now(datetime.timezone.utc)     # timestamp of this run
 
 # Returns the version number as a pair (major, minor)
 def get_version():
@@ -40,18 +42,25 @@ def set_verbose(b):
     _verbose = bool(b)
     logging.debug("_verbose: {}".format(_verbose))
 
+def get_run_ts():
+    return _run_ts
+
 ##############################################################################
 # Common functions
 ##############################################################################
 
+# Executes a system command in an interactive way.
+# cmdline must be a list.
 def execute_cmd_interactive(cmdline):
     cmd = " ".join(cmdline)
     logging.info(cmd)
     os.system(cmd)
 
-def execute_cmd(cmdline):
+# Executes a system command in a non-interactive way.
+# cmdline must be a list.
+def execute_cmd(cmdline, input=None):
     logging.info(" ".join(cmdline))
-    result    = subprocess.run(cmdline, capture_output=True, check=True, encoding='utf-8')
+    result    = subprocess.run(cmdline, input=input, capture_output=True, check=True, encoding='utf-8')
     err_lines = result.stderr.splitlines()
     out_lines = result.stdout.splitlines()
     for x in err_lines:
