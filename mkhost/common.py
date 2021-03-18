@@ -2,6 +2,8 @@ import datetime
 import logging
 import os
 import subprocess
+import sys
+import threading
 
 ##############################################################################
 # Common settings
@@ -49,25 +51,85 @@ def get_run_ts():
 # Common functions
 ##############################################################################
 
+def _stream_reader(stream, handlers):
+    for line in iter(stream.readline, b''):
+        for h in handlers:
+            h(line)
+
 # Executes a system command in an interactive way.
 # cmdline must be a list.
+# Returns the list of resulting output lines.
 def execute_cmd_interactive(cmdline):
-    cmd = " ".join(cmdline)
-    logging.info(cmd)
-    os.system(cmd)
-
-# Executes a system command in a non-interactive way.
-# cmdline must be a list.
-def execute_cmd(cmdline, input=None):
     logging.info(" ".join(cmdline))
-    result    = subprocess.run(cmdline, input=input, capture_output=True, check=True, encoding='utf-8')
+
+    proc = subprocess.Popen(
+               cmdline,
+               stdin=sys.stdin,
+               stdout=subprocess.PIPE,
+               stderr=subprocess.PIPE,
+               check=True,
+               universal_newlines=True)
+
+    out_lines  = []
+    out_reader = threading.Thread(target=_stream_reader, daemon=True,
+                     args=(proc.stdout, [print, out_lines.append]))
+    err_lines  = []
+    err_reader = threading.Thread(target=_stream_reader, daemon=True,
+                     args=(proc.stdout, [lambda x: print(x,file=sys.stderr), err_lines.append]))
+
+    for t in (err_reader, out_reader):
+        t.start()
+
+    # wait for the process to terminate
+    proc.wait()
+
+    # join the reader threads
+    for t in (err_reader, out_reader):
+        t.join()
+
+    # logging.debug("result: {}".format(result))
+    # logging.debug("result.stderr: {}".format(result.stderr))
+    # logging.debug("result.stdout: {}".format(result.stdout))
+    # err_lines = result.stderr.splitlines() if result.stderr else []
+    # out_lines = result.stdout.splitlines() if result.stdout else []
+
+    for x in err_lines:
+        logging.warning("E: {}".format(x))
+    for x in out_lines:
+        logging.debug("E: {}".format(x))
+    return out_lines
+
+# Executes a system command in a non-interactive way (batch).
+# cmdline must be a list.
+# Returns the list of resulting output lines.
+def execute_cmd_batch(cmdline, input=None):
+    logging.info(" ".join(cmdline))
+
+    proc_result = subprocess.run(
+                        cmdline,
+                        input=input,
+                        capture_output=True,
+                        check=True,
+                        universal_newlines=True)
+
     err_lines = result.stderr.splitlines()
     out_lines = result.stdout.splitlines()
+
     for x in err_lines:
         logging.warning(x)
     for x in out_lines:
         logging.debug(x)
+
     return out_lines
+
+# Executes a system command.
+# cmdline must be a list.
+# Returns the list of resulting output lines.
+def execute_cmd(cmdline):
+    if get_non_interactive():
+        return execute_cmd_batch(cmdline)
+    else:
+        return execute_cmd_interactive(cmdline)
 
 # Returns the apt-get command with some default arguments applied.
 # A list.
@@ -77,10 +139,6 @@ def apt_get_cmd(*args):
                (["--yes"]     if get_non_interactive() else []) +       \
                list(args)
 
-def update_pkgs():
-    execute_cmd_interactive(apt_get_cmd("update"))
-    execute_cmd_interactive(apt_get_cmd("upgrade"))
-
 def install_pkgs(pkgs):
     if pkgs:
-        execute_cmd_interactive(apt_get_cmd("install", *pkgs))
+        execute_cmd(apt_get_cmd("install", *pkgs))
