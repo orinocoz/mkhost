@@ -151,8 +151,8 @@ def execute_cmd_batch(cmdline, input=None):
                         check=True,
                         universal_newlines=True)
 
-    err_lines = result.stderr.splitlines()
-    out_lines = result.stdout.splitlines()
+    err_lines = proc_result.stderr.splitlines()
+    out_lines = proc_result.stdout.splitlines()
 
     for x in err_lines:
         logging.warning(x)
