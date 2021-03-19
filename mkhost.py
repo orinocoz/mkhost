@@ -43,7 +43,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Setup logging
-    log_format = '[{asctime}] {levelname:8} {message}'
+    log_format = '[{asctime}] {levelname:8} {thread} {message}'
     logging.basicConfig(stream=sys.stderr, level=(logging.DEBUG if args.verbose else logging.INFO), format=log_format, style='{')
 
     # Setup global variables
