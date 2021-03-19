@@ -76,7 +76,6 @@ def _stream_reader(lk, stream, handlers):
             time.sleep(1)
 
     with lk:
-        # logging.debug("_stream_reader return")
         stream.close()
 
 # Writes the given string (chunk) to the given stream; flushes the stream.
@@ -108,11 +107,11 @@ def execute_cmd_interactive(cmdline):
 
     # stdout
     out_buffer = io.StringIO()
-    out_reader = threading.Thread(target=_stream_reader, name='stdout reader', daemon=True,
+    out_reader = threading.Thread(target=_stream_reader, name='stdout-reader', daemon=True,
                      args=(lk, proc.stdout, [functools.partial(_stream_writer, sys.stdout), out_buffer.write]))
     # stderr
     err_buffer = io.StringIO()
-    err_reader = threading.Thread(target=_stream_reader, name='stderr reader', daemon=True,
+    err_reader = threading.Thread(target=_stream_reader, name='stderr-reader', daemon=True,
                      args=(lk, proc.stderr, [functools.partial(_stream_writer, sys.stderr), err_buffer.write]))
 
     # start the threads
