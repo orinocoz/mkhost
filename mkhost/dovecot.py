@@ -32,11 +32,11 @@ def gen_pwd_hash(username):
     if mkhost.common.get_non_interactive():
         pwd = gen_pwd()
         logging.info("New password for {}: {}".format(username, pwd))
-        return mkhost.common.execute_cmd_batch(pwd_hash_cmd, input=(pwd + os.linesep + pwd + os.linesep))[0]
+        return mkhost.common.execute_cmd_batch(pwd_hash_cmd, input=(pwd + os.linesep + pwd + os.linesep))[0][0]
         # TODO clear error message if number of output lines != 1
     else:
         logging.info("New password for {}".format(username))
-        return mkhost.common.execute_cmd_interactive(pwd_hash_cmd)[0]
+        return mkhost.common.execute_cmd_interactive(pwd_hash_cmd)[0][0]
         # TODO clear error message if number of output lines != 1
 
 # Generates Dovecot configuration and writes it to the given configuration file
