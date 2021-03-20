@@ -34,7 +34,8 @@ def install(letsencrypt_home):
     postconf_set('smtp_sasl_auth_enable',        'no')
     postconf_set('smtp_tls_security_level',      'may')
 
-    postconf_set('smtpd_recipient_restrictions', 'permit_mynetworks reject_unauth_destination')
+    # TODO: reject_rbl_client zen.spamhaus.org ?
+    postconf_set('smtpd_recipient_restrictions', 'permit_mynetworks permit_sasl_authenticated reject_unauth_destination')
     postconf_set('smtpd_relay_restrictions',     'permit_mynetworks permit_sasl_authenticated reject_unauth_destination')
     postconf_set('smtpd_sasl_auth_enable',       'no')
     postconf_set('smtpd_tls_auth_only',          'yes')
@@ -58,6 +59,12 @@ def install(letsencrypt_home):
     if not mail_spool_directory.endswith('/'):
         postconf_set('mail_spool_directory', mail_spool_directory + '/')
     # TODO create user dirs
+
+    postconf_set('smtpd_sasl_path',              'private/auth')
+
+    # Only allow methods that support forward secrecy (Dovecot only).
+    # http://www.postfix.org/postconf.5.html#smtpd_sasl_security_options
+    postconf_set('smtpd_sasl_security_options',  'noanonymous forward_secrecy')
 
     # The SASL plug-in type that the Postfix SMTP server should use for authentication.
     # The available types are listed with the "postconf -a" command.
