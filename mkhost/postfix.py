@@ -30,8 +30,11 @@ def install(letsencrypt_home):
     postconf_set('mynetworks_style',             'host')
     postconf_set('myorigin',                     '$myhostname')
     postconf_del('relay_domains')
+    # TODO: relay host
+    postconf_del('relayhost')
 
     postconf_set('smtp_sasl_auth_enable',        'no')
+    postconf_set('smtp_tls_loglevel',            '1')
     postconf_set('smtp_tls_security_level',      'may')
 
     # TODO: reject_rbl_client zen.spamhaus.org ?
