@@ -15,7 +15,9 @@ def postconf_set(key, value):
 def install(letsencrypt_home):
     mkhost.common.install_pkgs(["postfix"])
 
+    postconf_set('biff',                         'no')
     postconf_set('broken_sasl_auth_clients',     'no')
+    postconf_set('delay_warning_time',           '4h')
     postconf_set('lmtp_sasl_auth_enable',        'no')
     postconf_set('mydomain',                     mkhost.cfg.MY_HOST_DOMAIN)
     postconf_set('myhostname',                   "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN)
