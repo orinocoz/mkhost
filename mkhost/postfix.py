@@ -1,9 +1,14 @@
+import logging
+
 import mkhost.cfg
 import mkhost.common
 import mkhost.letsencrypt
 
 def postconf_del(key):
     mkhost.common.execute_cmd(["postconf", "-v", "-#", "{}".format(key)])
+
+def postconf_get(key):
+    return mkhost.common.execute_cmd(["postconf", "-h", "{}".format(key)])[0]
 
 def postconf_set(key, value):
     mkhost.common.execute_cmd(["postconf", "-v", "-e", "{}={}".format(key,value)])
@@ -15,12 +20,26 @@ def postconf_set(key, value):
 def install(letsencrypt_home):
     mkhost.common.install_pkgs(["postfix"])
 
+    # The directory where local(8) UNIX-style mailboxes are kept. The default setting depends on the system type.
+    # Specify a name ending in / for maildir-style delivery.
+    #
+    # Note: maildir delivery is done with the privileges of the recipient. If you use the mail_spool_directory
+    # setting for maildir style delivery, then you must create the top-level maildir directory in advance.
+    # Postfix will not create it.
+    #
+    # http://www.postfix.org/postconf.5.html#mail_spool_directory
+    mail_spool_directory = postconf_get('mail_spool_directory') or '/var/mail/'
+    logging.debug('mail_spool_directory: {}'.format(mail_spool_directory))
+    if not mail_spool_directory.endswith('/'):
+        postconf_set('mail_spool_directory', mail_spool_directory + '/')
+    # TODO create user dirs
+
     postconf_set('biff',                         'no')
     postconf_set('broken_sasl_auth_clients',     'no')
     postconf_set('delay_warning_time',           '4h')
     postconf_set('lmtp_sasl_auth_enable',        'no')
     postconf_set('mydomain',                     mkhost.cfg.MY_HOST_DOMAIN)
-    postconf_set('myhostname',                   "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN)
+    postconf_set('myhostname',                   "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN))
     postconf_del('mynetworks')
     postconf_set('mynetworks_style',             'host')
     postconf_set('myorigin',                     '$myhostname')
