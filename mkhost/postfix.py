@@ -19,6 +19,9 @@ def install(letsencrypt_home):
     postconf_set('lmtp_sasl_auth_enable',        'no')
     postconf_set('mydomain',                     mkhost.cfg.MY_HOST_DOMAIN)
     postconf_set('myhostname',                   "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN)
+    postconf_del('mynetworks')
+    postconf_set('mynetworks_style',             'host')
+    postconf_set('myorigin',                     '$myhostname')
     postconf_del('relay_domains')
 
     postconf_set('smtp_sasl_auth_enable',        'no')
