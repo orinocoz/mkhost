@@ -23,12 +23,15 @@ def install(letsencrypt_home):
     postconf_set('biff',                         'no')
     postconf_set('broken_sasl_auth_clients',     'no')
     postconf_set('delay_warning_time',           '4h')
+    postconf_set('inet_interfaces',              'all')
     postconf_set('lmtp_sasl_auth_enable',        'no')
     postconf_set('mydomain',                     mkhost.cfg.MY_HOST_DOMAIN)
     postconf_set('myhostname',                   "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN))
     postconf_del('mynetworks')
     postconf_set('mynetworks_style',             'host')
     postconf_set('myorigin',                     '$myhostname')
+    # TODO test it
+    postconf_set('recipient_delimiter',          '+')
     postconf_del('relay_domains')
     # TODO: relay host
     postconf_del('relayhost')
@@ -74,3 +77,5 @@ def install(letsencrypt_home):
     # http://www.postfix.org/postconf.5.html#smtpd_sasl_type
     # TODO: check if dovecot is available! error if not.
     postconf_set('smtpd_sasl_type',              'dovecot')
+
+    # TODO milter
