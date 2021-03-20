@@ -61,5 +61,5 @@ if __name__ == "__main__":
     # Destructively re-configure the machine
     mkhost.common.update_pkgs()
     mkhost.letsencrypt.install()
-    mkhost.dovecot.install(args.doveconf)
+    mkhost.dovecot.install(args.doveconf, args.letsencrypt)
     mkhost.postfix.install(args.letsencrypt)

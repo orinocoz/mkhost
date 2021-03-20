@@ -9,6 +9,7 @@ import tempfile
 import mkhost.common
 import mkhost.cfg
 import mkhost.cfg_parser
+import mkhost.letsencrypt
 
 re_mkhost_blank = re.compile(
     '^\s*$', re.ASCII)
@@ -43,8 +44,9 @@ def gen_pwd_hash(username):
 # (which must be the main Dovecot configuration file).
 #
 # Params:
-#   doveconf : path to the main Dovecot configuration file
-def write_config(doveconf):
+#   doveconf         : path to the main Dovecot configuration file
+#   letsencrypt_home : Let's Encrypt home dir
+def write_config(doveconf, letsencrypt_home):
     with open(doveconf) as f:
         for line in f:
             m = re_mkhost_header.match(line)
@@ -187,12 +189,10 @@ service auth {{
 ########################################################################
 
 ssl      = required
-ssl_cert = </etc/letsencrypt/live/{}.{}/cert.pem
-ssl_key  = </etc/letsencrypt/live/{}.{}/privkey.pem
-""".format(mkhost.cfg.MY_HOST_NAME,
-           mkhost.cfg.MY_HOST_DOMAIN,
-           mkhost.cfg.MY_HOST_NAME,
-           mkhost.cfg.MY_HOST_DOMAIN)
+ssl_cert = <{}
+ssl_key  = <{}
+""".format(mkhost.letsencrypt.cert_path(letsencrypt_home),
+           mkhost.letsencrypt.key_path(letsencrypt_home))
 
     # overwrite the configuration file
     if not mkhost.common.get_dry_run():
@@ -254,9 +254,10 @@ def write_users_db():
 # Installs and configures Dovecot.
 #
 # Params:
-#   doveconf : path to dovecot configuration file
-def install(doveconf):
+#   doveconf         : path to dovecot configuration file
+#   letsencrypt_home : Let's Encrypt home dir
+def install(doveconf, letsencrypt_home):
     mkhost.common.install_pkgs(["dovecot-imapd"])
 
-    write_config(doveconf)
+    write_config(doveconf, letsencrypt_home)
     write_users_db()

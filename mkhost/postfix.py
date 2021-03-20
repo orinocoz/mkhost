@@ -1,7 +1,6 @@
-import os.path
-
 import mkhost.cfg
 import mkhost.common
+import mkhost.letsencrypt
 
 def postconf_del(key):
     mkhost.common.execute_cmd(["postconf", "-v", "-#", "{}".format(key)])
@@ -27,10 +26,8 @@ def install(letsencrypt_home):
     postconf_set('smtpd_relay_restrictions',     'permit_mynetworks permit_sasl_authenticated reject_unauth_destination')
     postconf_set('smtpd_sasl_auth_enable ',      'no')
     postconf_set('smtpd_tls_auth_only',          'yes')
-    postconf_set('smtpd_tls_cert_file',          os.path.join(
-        letsencrypt_home, "live", "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN), "cert.pem"))
-    postconf_set('smtpd_tls_key_file',           os.path.join(
-        letsencrypt_home, "live", "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN), "privkey.pem"))
+    postconf_set('smtpd_tls_cert_file',          mkhost.letsencrypt.cert_path(letsencrypt_home))
+    postconf_set('smtpd_tls_key_file',           mkhost.letsencrypt.key_path(letsencrypt_home))
     postconf_set('smtpd_tls_security_level',     'may')
     postconf_set('smtpd_tls_wrappermode',        'no')
 

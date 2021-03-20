@@ -1,5 +1,15 @@
+import os.path
+
 import mkhost.cfg
 import mkhost.common
+
+def cert_path(letsencrypt_home):
+    return os.path.join(
+        letsencrypt_home, "live", "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN), "cert.pem")
+
+def key_path(letsencrypt_home):
+    return os.path.join(
+        letsencrypt_home, "live", "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN), "privkey.pem")
 
 # Installs Let's Encrypt's certificate.
 def install():
