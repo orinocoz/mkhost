@@ -22,6 +22,12 @@ if __name__ == "__main__":
                         default="/etc/dovecot/dovecot.conf",
                         help="Dovecot configuration file; default: %(default)s")
 
+    parser.add_argument("--letsencrypt",
+                        metavar="DIR",
+                        required=False,
+                        default="/etc/letsencrypt/",
+                        help="Let's Encrypt home directory; default: %(default)s")
+
     parser.add_argument("--batch",
                         required=False,
                         action="store_true",
@@ -56,4 +62,4 @@ if __name__ == "__main__":
     mkhost.common.update_pkgs()
     mkhost.letsencrypt.install()
     mkhost.dovecot.install(args.doveconf)
-    mkhost.postfix.install()
+    mkhost.postfix.install(args.letsencrypt)
