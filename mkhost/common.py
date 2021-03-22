@@ -83,6 +83,23 @@ def _stream_writer(stream, chunk):
     stream.write(chunk)
     stream.flush()
 
+# Extracts and optionally prints the error/output lines captured in the
+# process call.
+# Returns a pair: (stdout lines, stderr lines).
+def extract_err_out_lines(proc_result, print_err=True, print_out=True):
+    err_lines = (proc_result.stderr or '').splitlines()
+    out_lines = (proc_result.stdout or '').splitlines()
+
+    if print_err:
+        for x in err_lines:
+            logging.warning(x)
+
+    if print_out:
+        for x in out_lines:
+            logging.debug(x)
+
+    return (out_lines, err_lines)
+
 # Executes a system command in an interactive way.
 # cmdline must be a list.
 # Returns a pair: (stdout lines, stderr lines).
@@ -142,22 +159,19 @@ def execute_cmd_interactive(cmdline):
 def execute_cmd_batch(cmdline, input=None):
     logging.info(" ".join(cmdline))
 
-    proc_result = subprocess.run(
-                        cmdline,
-                        shell=False,
-                        input=input,
-                        capture_output=True,
-                        check=True,
-                        universal_newlines=True)
+    try:
+        proc_result = subprocess.run(
+                            cmdline,
+                            shell=False,
+                            input=input,
+                            capture_output=True,
+                            check=True,
+                            universal_newlines=True)
 
-    err_lines = proc_result.stderr.splitlines()
-    out_lines = proc_result.stdout.splitlines()
-
-    for x in err_lines:
-        logging.warning(x)
-    for x in out_lines:
-        logging.debug(x)
-    return (out_lines, err_lines)
+        return extract_err_out_lines(proc_result)
+    except subprocess.CalledProcessError as e:
+        extract_err_out_lines(e)
+        raise e
 
 # Executes a system command.
 # cmdline must be a list.
