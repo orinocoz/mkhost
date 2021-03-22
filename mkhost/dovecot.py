@@ -204,7 +204,6 @@ ssl_key  = <{}
 
 def write_users_db():
     vboxes = mkhost.cfg_parser.get_virtual_mailboxes()
-    logging.debug("vboxes : {}".format(vboxes))
 
     # Parse the existing user db file, filter users
     old_lines = []
