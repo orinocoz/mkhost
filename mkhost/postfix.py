@@ -79,3 +79,20 @@ def install(letsencrypt_home):
     postconf_set('smtpd_sasl_type',              'dovecot')
 
     # TODO milter
+
+    # virtual alias domains
+    #
+    # http://www.postfix.org/postconf.5.html#virtual_alias_domains
+    alias_doms = mkhost.cfg_parser.get_alias_domains()
+    if alias_doms:
+        postconf_set('virtual_alias_domains', ' '.join(alias_doms))
+    else:
+        postconf_del('virtual_alias_domains')
+
+    # virtual mailbox domains
+    #
+    # http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
+    if mkhost.cfg.HOSTED_DOMAINS:
+        postconf_set('virtual_mailbox_domains', ' '.join(mkhost.cfg.HOSTED_DOMAINS))
+    else:
+        postconf_del('virtual_mailbox_domains')
