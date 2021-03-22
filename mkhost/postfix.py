@@ -13,6 +13,12 @@ def postconf_get(key):
 def postconf_set(key, value):
     mkhost.common.execute_cmd(["postconf", "-v", "-e", "{}={}".format(key,value)])
 
+def postconf_set_multiple(key, values):
+    if values:
+        postconf_set(key, ' '.join(values))
+    else:
+        postconf_del(key)
+
 # Installs and configures Postfix.
 #
 # Params:
@@ -83,16 +89,9 @@ def install(letsencrypt_home):
     # virtual alias domains
     #
     # http://www.postfix.org/postconf.5.html#virtual_alias_domains
-    alias_doms = mkhost.cfg_parser.get_alias_domains()
-    if alias_doms:
-        postconf_set('virtual_alias_domains', ' '.join(alias_doms))
-    else:
-        postconf_del('virtual_alias_domains')
+    postconf_set_multiple('virtual_alias_domains', mkhost.cfg_parser.get_alias_domains())
 
     # virtual mailbox domains
     #
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
-    if mkhost.cfg.HOSTED_DOMAINS:
-        postconf_set('virtual_mailbox_domains', ' '.join(mkhost.cfg.HOSTED_DOMAINS))
-    else:
-        postconf_del('virtual_mailbox_domains')
+    postconf_set_multiple('virtual_mailbox_domains', mkhost.cfg.MAILBOXES.keys())
