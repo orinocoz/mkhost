@@ -16,7 +16,7 @@ MY_HOST_NAME = "my-host"
 #
 # This FQDN will be used to obtain Let's Encrypt certificate.
 # This must correspond to your DNS.
-MY_HOST_DOMAIN = "my-domain.tld"
+MY_HOST_DOMAIN = "example.com"
 
 # Hosted (virtual mailbox and virtual alias) mail domains. MX DNS record for each of them
 # should point to MY_HOST_NAME . MY_HOST_DOMAIN .
