@@ -1,8 +1,15 @@
 import logging
+import os
+import re
+import shutil
+import tempfile
 
 import mkhost.cfg
 import mkhost.common
 import mkhost.letsencrypt
+
+re_mkhost_user = re.compile(
+    '^([^@]+)@([^@]+?)\s+(\S+)$', re.ASCII)
 
 def postconf_del(key):
     mkhost.common.execute_cmd(["postconf", "-v", "-#", "{}".format(key)])
@@ -19,13 +26,11 @@ def postconf_set_multiple(key, values):
     else:
         postconf_del(key)
 
-# Installs and configures Postfix.
+# Basic Postfix configuration settings using postconf.
 #
 # Params:
 #   letsencrypt_home : Let's Encrypt home dir
-def install(letsencrypt_home):
-    mkhost.common.install_pkgs(["postfix"])
-
+def postconf_all(letsencrypt_home):
     postconf_set('biff',                         'no')
     postconf_set('broken_sasl_auth_clients',     'no')
     postconf_set('delay_warning_time',           '4h')
@@ -95,3 +100,68 @@ def install(letsencrypt_home):
     #
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
     postconf_set_multiple('virtual_mailbox_domains', mkhost.cfg.MAILBOXES.keys())
+
+    # http://www.postfix.org/postconf.5.html#virtual_mailbox_maps
+    postconf_set('virtual_mailbox_maps', "hash:{}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP))
+
+# Generates and writes out virtual mailbox map file (mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP).
+def write_vmailbox_map():
+    vboxes = mkhost.cfg_parser.get_virtual_mailboxes()
+
+    # Parse the existing virtual mailbox map file
+    old_lines = []
+    try:
+        with open(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP) as f:
+            for line in map(lambda x: x.rstrip(), f):
+                if mkhost.common.re_mkhost_comment.match(line):
+                    old_lines.append(line)
+                elif mkhost.common.re_mkhost_blank.match(line):
+                    old_lines.append(line)
+                else:
+                    m = re_mkhost_user.match(line)
+
+                    if m:
+                        username = m.group(1)
+                        domain   = m.group(2)
+                        path     = m.group(3)
+                        logging.debug("username : {}#".format(username))
+                        logging.debug("domain   : {}#".format(domain))
+                        logging.debug("path     : {}#".format(path))
+
+                        # TODO: make the 2nd lookup more effective?...
+                        if (domain in mkhost.cfg.MAILBOXES) and (username in mkhost.cfg.MAILBOXES[domain]):
+                            logging.debug("mailbox already exists: {}@{}".format(username, domain))
+                            old_lines.append(line)
+                            vboxes.remove("{}@{}".format(username, domain))
+                        else:
+                            logging.info("delete mailbox: {}@{}".format(username, domain))
+                    else:
+                        logging.warning("{}: invalid line: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP, line))
+    except FileNotFoundError:
+        logging.warning("postfix mailbox map file does not exist: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP))
+
+    # create new virtual mailbox map file
+    with tempfile.NamedTemporaryFile(mode="wt", prefix="mkhost-", delete=True) as f:
+        logging.debug("temp file: {}".format(f.name))
+        if old_lines:
+            print(os.linesep.join(old_lines), file=f)
+        if vboxes:
+            print(mkhost.common.mkhost_header(), file=f)
+            for x in vboxes:
+                xp = mkhost.common.parse_addr(x)
+                logging.info("create mailbox: {}@{}".format(xp[0],xp[1]))
+                print("{}@{}    {}/{}/mail/".format(xp[0],xp[1],xp[1],xp[0]), file=f)
+
+        # overwrite old user db file
+        if not mkhost.common.get_dry_run():
+            f.flush()
+            shutil.copyfile(f.name, mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP)
+
+# Installs and configures Postfix.
+#
+# Params:
+#   letsencrypt_home : Let's Encrypt home dir
+def install(letsencrypt_home):
+    mkhost.common.install_pkgs(["postfix"])
+    write_vmailbox_map()
+    postconf_all(letsencrypt_home)

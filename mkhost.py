@@ -58,6 +58,9 @@ if __name__ == "__main__":
     mkhost.common.set_dry_run(args.dry_run)
     mkhost.common.set_non_interactive(args.batch)
 
+    # validate config
+    mkhost.cfg_parser.validate()
+
     # Destructively re-configure the machine
     mkhost.common.update_pkgs()
     mkhost.letsencrypt.install()
