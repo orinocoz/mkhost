@@ -18,8 +18,13 @@ MY_HOST_NAME = "my-host"
 # This must correspond to your DNS.
 MY_HOST_DOMAIN = "example.com"
 
-# Hosted (virtual mailbox and virtual alias) mail domains. MX DNS record for each of them
-# should point to MY_HOST_NAME . MY_HOST_DOMAIN .
+# Hosted (virtual mailbox) domains. These are the virtual domains which you
+# want to host mailboxes here for. Don't include virtual domains used
+# exclusively for mail forwarding.
+#
+# http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
+#
+# MX DNS record for each of them should point to MY_HOST_NAME . MY_HOST_DOMAIN .
 HOSTED_DOMAINS = ["a-server", "b-server"]
 
 # E-mail address mapping for mail forwarding. A single address can be mapped
