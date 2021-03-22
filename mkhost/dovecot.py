@@ -11,7 +11,7 @@ import mkhost.cfg
 import mkhost.cfg_parser
 import mkhost.letsencrypt
 
-re_mkhost_users = re.compile(
+re_users = re.compile(
     '^([^:]+):\{([-\w]+)\}\$(\w+)\$[^:]*:(\d*):(\d*)::::$', re.ASCII)
 
 pwd_hash_cmd = ["doveadm", "pw", "-s", "SHA512-CRYPT"]
@@ -205,12 +205,12 @@ def write_users_db():
     try:
         with open(mkhost.cfg.DOVECOT_USERS_DB) as f:
             for line in map(lambda x: x.rstrip(), f):
-                if mkhost.common.re_mkhost_comment.match(line):
+                if mkhost.common.re_comment.match(line):
                     old_lines.append(line)
-                elif mkhost.common.re_mkhost_blank.match(line):
+                elif mkhost.common.re_blank.match(line):
                     old_lines.append(line)
                 else:
-                    m = re_mkhost_users.match(line)
+                    m = re_users.match(line)
 
                     if m:
                         username = m.group(1)

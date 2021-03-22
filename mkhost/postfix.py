@@ -8,7 +8,7 @@ import mkhost.cfg
 import mkhost.common
 import mkhost.letsencrypt
 
-re_mkhost_user = re.compile(
+re_vmailbox  = re.compile(
     '^([^@]+)@([^@]+?)\s+(\S+)$', re.ASCII)
 
 def postconf_del(key):
@@ -113,12 +113,12 @@ def write_vmailbox_map():
     try:
         with open(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP) as f:
             for line in map(lambda x: x.rstrip(), f):
-                if mkhost.common.re_mkhost_comment.match(line):
+                if mkhost.common.re_comment.match(line):
                     old_lines.append(line)
-                elif mkhost.common.re_mkhost_blank.match(line):
+                elif mkhost.common.re_blank.match(line):
                     old_lines.append(line)
                 else:
-                    m = re_mkhost_user.match(line)
+                    m = re_vmailbox.match(line)
 
                     if m:
                         username = m.group(1)

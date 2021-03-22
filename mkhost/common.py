@@ -55,9 +55,9 @@ def get_run_ts():
 # Common constants
 ##############################################################################
 
-re_mkhost_blank = re.compile(
+re_blank = re.compile(
     '^\s*$', re.ASCII)
-re_mkhost_comment = re.compile(
+re_comment = re.compile(
     '^\s*#.*$', re.ASCII)
 re_mkhost_header = re.compile(
     '^# mkhost ([0-9]+)\.([0-9]+) config created at [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{6}\+[0-9]{2}:[0-9]{2}$', re.ASCII)
