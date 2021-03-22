@@ -5,7 +5,7 @@ import mkhost.cfg
 
 # Given an e-mail address (or a collection thereof), returns the domain (or a set thereof).
 def addr2dom(addr):
-    return x.partition('@')[2] if isinstance(addr,str) else set(map(lambda x: x.partition('@')[2], addr))
+    return addr.partition('@')[2] if isinstance(addr,str) else set(map(lambda x: x.partition('@')[2], addr))
 
 # Given a set of domains and a set of addresses, returns the subset of addresses which belong
 # to any of the given domains.

@@ -8,7 +8,7 @@ def postconf_del(key):
     mkhost.common.execute_cmd(["postconf", "-v", "-#", "{}".format(key)])
 
 def postconf_get(key):
-    return mkhost.common.execute_cmd(["postconf", "-h", "{}".format(key)])[0]
+    return mkhost.common.execute_cmd(["postconf", "-h", "{}".format(key)])[0][0]
 
 def postconf_set(key, value):
     mkhost.common.execute_cmd(["postconf", "-v", "-e", "{}={}".format(key,value)])
