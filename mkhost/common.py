@@ -79,6 +79,10 @@ def mkhost_header():
         _version_minor,
         get_run_ts().isoformat())
 
+# Promote x to list.
+def tolist(x):
+    return (x if isinstance(x,list) else [x])
+
 # Given an e-mail address, returns a pair: (username, domain).
 def parse_addr(addr):
     p = addr.partition('@')
