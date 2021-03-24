@@ -1,3 +1,4 @@
+import copy
 import logging
 import os
 import re
@@ -8,6 +9,8 @@ import mkhost.cfg
 import mkhost.common
 import mkhost.letsencrypt
 
+re_valias    = re.compile(
+    '^([^@]+)@([^@]+?)\s+(\S+@\S+)((?:\s*,\s*\S+@\S+)*)$', re.ASCII)
 re_vmailbox  = re.compile(
     '^([^@]+)@([^@]+?)\s+(\S+)$', re.ASCII)
 
@@ -96,6 +99,9 @@ def postconf_all(letsencrypt_home):
     # http://www.postfix.org/postconf.5.html#virtual_alias_domains
     postconf_set_multiple('virtual_alias_domains', mkhost.cfg_parser.get_alias_domains())
 
+    # http://www.postfix.org/postconf.5.html#virtual_alias_maps
+    postconf_set('virtual_alias_maps', "hash:{}".format(mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP))
+
     # virtual mailbox domains
     #
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
@@ -103,6 +109,77 @@ def postconf_all(letsencrypt_home):
 
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_maps
     postconf_set('virtual_mailbox_maps', "hash:{}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP))
+
+# Generates and writes out virtual alias map file (mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP).
+def write_valias_map():
+    mfwd = copy.deepcopy(mkhost.cfg.MAIL_FORWARDING)
+
+    # Parse the existing virtual alias map file
+    old_lines = []
+    try:
+        with open(mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP) as f:
+            for line in map(lambda x: x.rstrip(), f):
+                if mkhost.common.re_comment.match(line):
+                    old_lines.append(line)
+                elif mkhost.common.re_blank.match(line):
+                    old_lines.append(line)
+                else:
+                    m = re_valias.match(line)
+
+                    if m:
+                        suser  = m.group(1)         # source user
+                        sdom   = m.group(2)         # source domain
+                        taddr1 = m.group(3)         # 1st target address
+                        taddrs = list(filter(bool, map(lambda x: x.strip(), m.group(4).split(','))))
+
+                        # logging.debug("suser  : {}#".format(suser))
+                        # logging.debug("sdom   : {}#".format(sdom))
+                        # logging.debug("taddr1 : {}#".format(taddr1))
+                        # logging.debug("taddrs : {}#".format(taddrs))
+
+                        saddr = "{}@{}".format(suser, sdom)     # source address
+                        taddrs.insert(0,taddr1)
+                        # logging.debug("taddrs : {}#".format(taddrs))
+
+                        if (saddr in mfwd):
+                            # logging.debug("mapping already exists: {}".format(saddr))
+                            mto = mkhost.common.tolist(mfwd[saddr])
+                            # logging.debug("mto: {}".format(mto))
+
+                            # taddrs_set = set(taddrs)
+                            # mto_set    = set(mto)
+                            # logging.debug("taddrs_set: {}".format(taddrs_set))
+                            # logging.debug("   mto_set: {}".format(mto_set))
+
+                            if (len(taddrs) == len(mto)) and (set(taddrs) == set(mto)):
+                                logging.debug("mapping already exists: {} => {}".format(saddr, mto))
+                                old_lines.append(line)
+                                del mfwd[saddr]
+                            else:
+                                logging.info("delete mapping: {} => {}".format(saddr, taddrs))
+                        else:
+                            logging.info("delete mapping: {}".format(saddr))
+                    else:
+                        logging.warning("{}: invalid line: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP, line))
+    except FileNotFoundError:
+        logging.warning("Postfix virtual alias map file does not exist: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP))
+
+    # create new virtual alias map file
+    with tempfile.NamedTemporaryFile(mode="wt", prefix="mkhost-", delete=True) as f:
+        logging.debug("temp file: {}".format(f.name))
+        if old_lines:
+            print(os.linesep.join(old_lines), file=f)
+        if mfwd:
+            print(mkhost.common.mkhost_header(), file=f)
+            for x in mfwd:
+                ys = mkhost.common.tolist(mfwd[x])
+                logging.info("create mapping: {} => {}".format(x, ys))
+                print("{}    {}".format(x, ", ".join(ys)), file=f)
+
+        # overwrite old user db file
+        if not mkhost.common.get_dry_run():
+            f.flush()
+            shutil.copyfile(f.name, mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP)
 
 # Generates and writes out virtual mailbox map file (mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP).
 def write_vmailbox_map():
@@ -124,6 +201,7 @@ def write_vmailbox_map():
                         username = m.group(1)
                         domain   = m.group(2)
                         path     = m.group(3)
+
                         logging.debug("username : {}#".format(username))
                         logging.debug("domain   : {}#".format(domain))
                         logging.debug("path     : {}#".format(path))
@@ -138,7 +216,7 @@ def write_vmailbox_map():
                     else:
                         logging.warning("{}: invalid line: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP, line))
     except FileNotFoundError:
-        logging.warning("postfix mailbox map file does not exist: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP))
+        logging.warning("Postfix virtual mailbox map file does not exist: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP))
 
     # create new virtual mailbox map file
     with tempfile.NamedTemporaryFile(mode="wt", prefix="mkhost-", delete=True) as f:
@@ -164,4 +242,5 @@ def write_vmailbox_map():
 def install(letsencrypt_home):
     mkhost.common.install_pkgs(["postfix"])
     write_vmailbox_map()
+    write_valias_map()
     postconf_all(letsencrypt_home)
