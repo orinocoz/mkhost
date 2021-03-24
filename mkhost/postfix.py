@@ -180,6 +180,7 @@ def write_valias_map():
         if not mkhost.common.get_dry_run():
             f.flush()
             shutil.copyfile(f.name, mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP)
+            mkhost.common.execute_cmd(["postmap", mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP])
 
 # Generates and writes out virtual mailbox map file (mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP).
 def write_vmailbox_map():
