@@ -49,3 +49,13 @@ DOVECOT_LOOPBACK_ONLY = False
 
 # Dovecot users database
 DOVECOT_USERS_DB = "/etc/dovecot/users.mkhost"
+
+# Postfix virtual mailbox map file.
+#
+# http://www.postfix.org/postconf.5.html#virtual_mailbox_maps
+POSTFIX_VIRTUAL_MAILBOX_MAP = "/etc/postfix/vmailbox.mkhost"
+
+# Postfix virtual alias map file.
+#
+# http://www.postfix.org/postconf.5.html#virtual_alias_maps
+POSTFIX_VIRTUAL_ALIAS_MAP = "/etc/postfix/valias.mkhost"
