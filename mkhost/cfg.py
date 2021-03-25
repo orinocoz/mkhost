@@ -59,3 +59,6 @@ POSTFIX_VIRTUAL_MAILBOX_MAP = "/etc/postfix/vmailbox.mkhost"
 #
 # http://www.postfix.org/postconf.5.html#virtual_alias_maps
 POSTFIX_VIRTUAL_ALIAS_MAP = "/etc/postfix/valias.mkhost"
+
+# Directory where OpenDKIM will store domain keys.
+OPENDKIM_KEYS = "/etc/opendkim/mkhost/"
