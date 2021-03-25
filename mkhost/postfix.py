@@ -25,7 +25,7 @@ def postconf_set(key, value):
 
 def postconf_set_multiple(key, values):
     if values:
-        postconf_set(key, ' '.join(values))
+        postconf_set(key, ' '.join(filter(bool, values)))
     else:
         postconf_del(key)
 
