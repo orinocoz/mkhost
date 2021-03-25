@@ -23,6 +23,13 @@ def get_alias_domains():
     logging.debug("get_alias_domains: {}".format(aliased))
     return aliased
 
+# Given MAILBOXES (in the config file), compute the virtual mailbox
+# domains (those which can contain mailboxes).
+#
+# http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
+def get_mailbox_domains():
+    return mkhost.cfg.MAILBOXES.keys()
+
 # Given MAILBOXES and FORWARDING (in the config file), compute the
 # virtual mailbox set (hosted virtual mailboxes).
 def get_virtual_mailboxes():

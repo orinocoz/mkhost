@@ -105,7 +105,7 @@ def postconf_all(letsencrypt_home):
     # virtual mailbox domains
     #
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
-    postconf_set_multiple('virtual_mailbox_domains', mkhost.cfg.MAILBOXES.keys())
+    postconf_set_multiple('virtual_mailbox_domains', mkhost.cfg_parser.get_mailbox_domains())
 
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_maps
     postconf_set('virtual_mailbox_maps', "hash:{}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP))
