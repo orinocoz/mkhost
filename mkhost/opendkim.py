@@ -28,8 +28,10 @@ def genkey(domain):
         if not mkhost.common.get_dry_run():
             shutil.move(os.path.join(tempdir, "{}.txt".format(selector)), domain_dir)
             shutil.move(os.path.join(tempdir, "{}.private".format(selector)), domain_dir)
-            # TODO: check for file overwrite
-    except:
+    except shutil.Error as e:
+        shutil.rmtree(tempdir, ignore_errors=True)
+        logging.warning("Error installing new OpenDKIM keys for {}, skipping: {}".format(domain, e))
+    except Exception as e:
         shutil.rmtree(tempdir, ignore_errors=True)
         raise
 
