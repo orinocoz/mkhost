@@ -8,6 +8,7 @@ import mkhost.cfg
 import mkhost.common
 import mkhost.dovecot
 import mkhost.letsencrypt
+import mkhost.opendkim
 import mkhost.postfix
 
 if __name__ == "__main__":
@@ -66,3 +67,4 @@ if __name__ == "__main__":
     mkhost.letsencrypt.install()
     mkhost.dovecot.install(args.doveconf, args.letsencrypt)
     mkhost.postfix.install(args.letsencrypt)
+    mkhost.opendkim.install()
