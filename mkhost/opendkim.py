@@ -8,8 +8,10 @@ import mkhost.cfg_parser
 import mkhost.common
 
 def gen_selector():
-    # TODO: make this time based
-    return "mkhost"
+    u = mkhost.common.get_run_ts().strftime("%Y%m%d%H%M%S%z")
+    u = u.replace('+', 'p')
+    u = u.replace('-', 'm')
+    return u
 
 def genkey(domain):
     selector = gen_selector()
