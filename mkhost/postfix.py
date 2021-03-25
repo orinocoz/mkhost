@@ -203,9 +203,9 @@ def write_vmailbox_map():
                         domain   = m.group(2)
                         path     = m.group(3)
 
-                        logging.debug("username : {}#".format(username))
-                        logging.debug("domain   : {}#".format(domain))
-                        logging.debug("path     : {}#".format(path))
+                        # logging.debug("username : {}#".format(username))
+                        # logging.debug("domain   : {}#".format(domain))
+                        # logging.debug("path     : {}#".format(path))
 
                         # TODO: make the 2nd lookup more effective?...
                         if (domain in mkhost.cfg.MAILBOXES) and (username in mkhost.cfg.MAILBOXES[domain]):
