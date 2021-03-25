@@ -235,6 +235,7 @@ def write_vmailbox_map():
         if not mkhost.common.get_dry_run():
             f.flush()
             shutil.copyfile(f.name, mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP)
+            mkhost.common.execute_cmd(["postmap", mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP])
 
 # Installs and configures Postfix.
 #
