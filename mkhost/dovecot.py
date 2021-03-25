@@ -52,7 +52,7 @@ def write_config(doveconf, letsencrypt_home):
 
     configuration = """
 ########################################################################
-# mkhost {}.{} config created at {}
+{}
 ########################################################################
 
 # Kill all clients when Dovecot master process shuts down.
@@ -73,9 +73,7 @@ auth_verbose = yes
 verbose_ssl  = yes
 
 protocols    = {}
-""".format(mkhost.common._version_major,
-           mkhost.common._version_minor,
-           mkhost.common.get_run_ts().isoformat(),
+""".format(mkhost.common.mkhost_header(),
            " ".join(mkhost.cfg.DOVECOT_PROTOCOLS))
 
     # Listen on the loopback address only
