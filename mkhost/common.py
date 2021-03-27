@@ -48,6 +48,7 @@ def set_verbose(b):
     _verbose = bool(b)
     logging.debug("_verbose: {}".format(_verbose))
 
+# Returns the timestamp of this run as a timezone-aware, UTC datetime object.
 def get_run_ts():
     return _run_ts
 
