@@ -8,14 +8,11 @@ import mkhost.cfg_parser
 import mkhost.common
 
 def gen_selector():
-    u = mkhost.common.get_run_ts().strftime("%Y%m%d%H%M%S%z")
-    u = u.replace('+', 'p')
-    u = u.replace('-', 'm')
-    return u
+    return mkhost.common.get_run_ts().strftime("%Y%m%d%H%M%S")
 
 def genkey(domain):
     selector = gen_selector()
-    logging.info("opendkim-genkey: {}; selector: {}".format(domain, selector))
+    logging.info("opendkim-genkey selector: {}; domain: {}".format(selector, domain))
 
     if not mkhost.common.get_dry_run():
         domain_dir = os.path.join(mkhost.cfg.OPENDKIM_KEYS, domain)
