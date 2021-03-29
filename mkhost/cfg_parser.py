@@ -46,4 +46,4 @@ def validate():
     outhosted = outhosted.difference(mailboxes)
     logging.debug("outhosted (2): {}".format(outhosted))
     if outhosted:
-        raise Exception("Extra addresses on the right hand side in MAIL_FORWARDING: {}. They belong to MAILBOXES domains. Did you want to declare them in MAILBOXES?".format(outhosted))
+        raise Exception("Extra addresses on the right hand side in MAIL_FORWARDING: {}. They belong to MAILBOXES domains. Did you forget to declare them in MAILBOXES?".format(outhosted))
