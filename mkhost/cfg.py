@@ -62,3 +62,6 @@ POSTFIX_VIRTUAL_ALIAS_MAP = "/etc/postfix/valias.mkhost"
 
 # Directory where OpenDKIM will store domain keys.
 OPENDKIM_KEYS = "/etc/opendkim/mkhost/"
+
+# OpenDKIM config file
+OPENDKIM_CONF = "/etc/opendkim.conf"

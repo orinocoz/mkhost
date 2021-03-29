@@ -1,5 +1,7 @@
+import copy
 import logging
 import os.path
+import re
 import shutil
 import tempfile
 
@@ -7,8 +9,65 @@ import mkhost.cfg
 import mkhost.cfg_parser
 import mkhost.common
 
+re_key_value = re.compile(
+    '^(\w+)\s+(\S+)\s*$', re.ASCII)
+
+# TODO: extend this
+OPENDKIM_CONFIG = {
+    "AllowSHA1Only" :     False
+}
+
 def gen_selector():
     return mkhost.common.get_run_ts().strftime("%Y%m%d%H%M%S")
+
+# Generates and writes out OpenDKIM config file (mkhost.cfg.OPENDKIM_CONF).
+def write_conf():
+    new_cfg   = copy.deepcopy(OPENDKIM_CONFIG)
+    old_lines = []
+    old_kv    = dict()
+
+    try:
+        # Parse the existing virtual alias map file
+        with open(mkhost.cfg.OPENDKIM_CONF) as f:
+            for line in map(lambda x: x.rstrip(), f):
+                if mkhost.common.re_comment.match(line):
+                    old_lines.append(line)
+                elif mkhost.common.re_blank.match(line):
+                    old_lines.append(line)
+                else:
+                    m = re_key_value.match(line)
+
+                    if m:
+                        key = m.group(1)
+                        val = m.group(2)
+
+                        # logging.debug("opendkim: {} => {}".format(key,val))
+                        if (key not in OPENDKIM_CONFIG) or (str(OPENDKIM_CONFIG[key]) == val):
+                            logging.debug("opendkim save: {} => {}".format(key,val))
+                            old_lines.append(line)
+                            new_cfg.pop(key,None)
+                        else:
+                            logging.debug("opendkim drop: {} => {}".format(key,val))
+                    else:
+                        logging.warning("{}: invalid line: {}".format(mkhost.cfg.OPENKDIM_CFG, line))
+    except FileNotFoundError:
+        logging.warning("OpenDKIM config file does not exist: {}".format(mkhost.cfg.OPENDKIM_CONF))
+
+    # create new config file
+    with tempfile.NamedTemporaryFile(mode="wt", prefix="mkhost-", delete=True) as f:
+        logging.debug("temp file: {}".format(f.name))
+        if old_lines:
+            print(os.linesep.join(old_lines), file=f)
+        if new_cfg:
+            print(mkhost.common.mkhost_header(), file=f)
+            for x,y in new_cfg.items():
+                logging.info("opendkim  new: {} => {}".format(x,y))
+                print("{}        {}".format(x,y), file=f)
+
+        # overwrite the old config file
+        if not mkhost.common.get_dry_run():
+            f.flush()
+            shutil.copyfile(f.name, mkhost.cfg.OPENDKIM_CONF)
 
 def genkey(domain):
     selector = gen_selector()
@@ -47,3 +106,5 @@ def install():
     logging.debug("mailbox_domains: {}".format(domains))
     for d in domains:
         genkey(d)
+
+    write_conf()
