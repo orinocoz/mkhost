@@ -64,4 +64,5 @@ POSTFIX_VIRTUAL_ALIAS_MAP = "/etc/postfix/valias.mkhost"
 OPENDKIM_KEYS = "/etc/opendkim/mkhost/"
 
 # OpenDKIM config file
-OPENDKIM_CONF = "/etc/opendkim.conf"
+OPENDKIM_CONF     = "/etc/opendkim.conf"
+OPENDKIM_KEYTABLE = "/etc/opendkim-keytable.mkhost"

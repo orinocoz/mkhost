@@ -12,22 +12,45 @@ import mkhost.common
 re_key_value = re.compile(
     '^(\w+)\s+(\S+)\s*$', re.ASCII)
 
-# TODO: extend this
 OPENDKIM_CONFIG = {
-    "AllowSHA1Only" :     False
+    "AllowSHA1Only"    : False,
+    "KeyTable"         : "",
+    "LogResults"       : True,
+    "LogWhy"           : True,
+    "Mode"             : "sv",
+    "RequireSafeKeys"  : True,
+    "SyslogSuccess"    : True,
 }
 
 def gen_selector():
     return mkhost.common.get_run_ts().strftime("%Y%m%d%H%M%S")
 
+# Generates and writes out OpenDKIM keytable file (mkhost.cfg.OPENDKIM_KEYTABLE).
+def write_keytable():
+    selector = gen_selector()
+    domains  = mkhost.cfg_parser.get_mailbox_domains()
+
+    # create new config file
+    with tempfile.NamedTemporaryFile(mode="wt", prefix="mkhost-", delete=True) as f:
+        logging.debug("temp file: {}".format(f.name))
+        for d in domains:
+            logging.info("opendkim keytable: {}".format(d))
+            pk_path  = os.path.join(mkhost.cfg.OPENDKIM_KEYS, d, "{}.private".format(selector))     # private key file
+            key_name = d                                                                            # key name is just the domain name
+            print("{}        {}:{}:{}".format(key_name, d, selector, pk_path), file=f)
+
+        # overwrite the old config file
+        if not mkhost.common.get_dry_run():
+            f.flush()
+            shutil.copyfile(f.name, mkhost.cfg.OPENDKIM_KEYTABLE)
+
 # Generates and writes out OpenDKIM config file (mkhost.cfg.OPENDKIM_CONF).
 def write_conf():
     new_cfg   = copy.deepcopy(OPENDKIM_CONFIG)
     old_lines = []
-    old_kv    = dict()
 
     try:
-        # Parse the existing virtual alias map file
+        # Parse the existing configuration file
         with open(mkhost.cfg.OPENDKIM_CONF) as f:
             for line in map(lambda x: x.rstrip(), f):
                 if mkhost.common.re_comment.match(line):
@@ -49,7 +72,7 @@ def write_conf():
                         else:
                             logging.debug("opendkim drop: {} => {}".format(key,val))
                     else:
-                        logging.warning("{}: invalid line: {}".format(mkhost.cfg.OPENKDIM_CFG, line))
+                        logging.warning("{}: invalid line: {}".format(mkhost.cfg.OPENDKIM_CONF, line))
     except FileNotFoundError:
         logging.warning("OpenDKIM config file does not exist: {}".format(mkhost.cfg.OPENDKIM_CONF))
 
@@ -69,6 +92,8 @@ def write_conf():
             f.flush()
             shutil.copyfile(f.name, mkhost.cfg.OPENDKIM_CONF)
 
+# Given a domain name, generates a selector, a public-private key pair
+# and writes them to a file.
 def genkey(domain):
     selector = gen_selector()
     logging.info("opendkim-genkey selector: {}; domain: {}".format(selector, domain))
@@ -107,4 +132,5 @@ def install():
     for d in domains:
         genkey(d)
 
+    write_keytable()
     write_conf()
