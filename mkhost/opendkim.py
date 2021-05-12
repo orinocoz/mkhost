@@ -88,7 +88,7 @@ def write_conf():
             print(mkhost.common.mkhost_header(), file=f)
             for x,y in new_cfg.items():
                 logging.info("opendkim  new: {} => {}".format(x,y))
-                print("{}        {}".format(x,y), file=f)
+                print("{:<24} {}".format(x,y), file=f)
 
         # overwrite the old config file
         if not mkhost.common.get_dry_run():
