@@ -28,7 +28,7 @@ def get_alias_domains():
 #
 # http://www.postfix.org/postconf.5.html#virtual_mailbox_domains
 def get_mailbox_domains():
-    return mkhost.cfg.MAILBOXES.keys()
+    return set(mkhost.cfg.MAILBOXES.keys())
 
 # Given MAILBOXES and FORWARDING (in the config file), compute the
 # virtual mailbox set (hosted virtual mailboxes).
