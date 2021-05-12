@@ -4,7 +4,7 @@ import mkhost.common
 import mkhost.cfg
 
 # Given MAIL_FORWARDING (in the config file), compute the outgoing addresses (those mapped to, but
-# not mapped from).
+# not mapped from). Can include mailboxes and 3rd party addresses.
 def get_outgoing_addresses():
     vals2     = map(mkhost.common.tolist, mkhost.cfg.MAIL_FORWARDING.values())
     vals      = set(x for ys in vals2 for x in ys)
