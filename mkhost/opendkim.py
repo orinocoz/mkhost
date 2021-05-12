@@ -123,12 +123,12 @@ def install():
     mkhost.common.install_pkgs(["opendkim", "opendkim-tools"])
 
     domains = mkhost.cfg_parser.get_alias_domains()
-    logging.debug("alias_domains: {}".format(domains))
+    logging.info("alias_domains: {}".format(domains))
     for d in domains:
         genkey(d)
 
     domains = mkhost.cfg_parser.get_mailbox_domains()
-    logging.debug("mailbox_domains: {}".format(domains))
+    logging.info("mailbox_domains: {}".format(domains))
     for d in domains:
         genkey(d)
 
