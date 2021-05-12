@@ -68,3 +68,6 @@ if __name__ == "__main__":
     mkhost.opendkim.install()
     mkhost.dovecot.install(args.doveconf, args.letsencrypt)
     mkhost.postfix.install(args.letsencrypt)
+
+    # Print DNS log
+    logging.warning("List of DNS changes to apply: {}".format(mkhost.common._dns_log))

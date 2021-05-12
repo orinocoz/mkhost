@@ -9,6 +9,8 @@ import sys
 import threading
 import time
 
+import mkhost.dns_log
+
 ##############################################################################
 # Common settings
 ##############################################################################
@@ -68,10 +70,14 @@ re_mkhost_header = re.compile(
 ##############################################################################
 
 _subproc_running = False
+_dns_log         = mkhost.dns_log.DNSLog()
 
 ##############################################################################
 # Common functions
 ##############################################################################
+
+def add_dns_record(record):
+    _dns_log.add_record(record)
 
 # Generates mkhost header string.
 def mkhost_header():

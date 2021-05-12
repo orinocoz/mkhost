@@ -1,6 +1,7 @@
 import copy
 import logging
 import os.path
+import pathlib
 import re
 import shutil
 import tempfile
@@ -111,7 +112,9 @@ def genkey(domain):
             "opendkim-genkey", "-a", "-r", "-d", domain, "-s", selector, "-D", tempdir])
 
         if not mkhost.common.get_dry_run():
-            shutil.move(os.path.join(tempdir, "{}.txt".format(selector)), domain_dir)
+            dns_rec_file = os.path.join(tempdir, "{}.txt".format(selector))
+            mkhost.common.add_dns_record(pathlib.Path(dns_rec_file).read_text())
+            shutil.move(dns_rec_file, domain_dir)
             shutil.move(os.path.join(tempdir, "{}.private".format(selector)), domain_dir)
     except shutil.Error as e:
         shutil.rmtree(tempdir, ignore_errors=True)
