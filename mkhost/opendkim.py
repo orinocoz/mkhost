@@ -14,7 +14,7 @@ re_key_value = re.compile(
 
 OPENDKIM_CONFIG = {
     "AllowSHA1Only"    : False,
-    "KeyTable"         : "",
+    "KeyTable"         : mkhost.cfg.OPENDKIM_KEYTABLE,
     "LogResults"       : True,
     "LogWhy"           : True,
     "Mode"             : "sv",
@@ -42,6 +42,7 @@ def write_keytable():
         # overwrite the old config file
         if not mkhost.common.get_dry_run():
             f.flush()
+            logging.info("write opendkim keytable to {}".format(mkhost.cfg.OPENDKIM_KEYTABLE))
             shutil.copyfile(f.name, mkhost.cfg.OPENDKIM_KEYTABLE)
 
 # Generates and writes out OpenDKIM config file (mkhost.cfg.OPENDKIM_CONF).
@@ -90,6 +91,7 @@ def write_conf():
         # overwrite the old config file
         if not mkhost.common.get_dry_run():
             f.flush()
+            logging.info("write opendkim config to {}".format(mkhost.cfg.OPENDKIM_CONF))
             shutil.copyfile(f.name, mkhost.cfg.OPENDKIM_CONF)
 
 # Given a domain name, generates a selector, a public-private key pair
