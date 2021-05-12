@@ -38,7 +38,7 @@ def write_keytable():
             logging.info("opendkim keytable: {}".format(d))
             pk_path  = os.path.join(mkhost.cfg.OPENDKIM_KEYS, d, "{}.private".format(selector))     # private key file
             key_name = d                                                                            # key name is just the domain name
-            print("{}        {}:{}:{}".format(key_name, d, selector, pk_path), file=f)
+            print("{:<40} {}:{}:{}".format(key_name, d, selector, pk_path), file=f)
             # TODO: fix column alignment; check the length of the longest domain
 
         # overwrite the old config file
