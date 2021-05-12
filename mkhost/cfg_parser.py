@@ -40,10 +40,9 @@ def get_virtual_mailboxes():
 def validate():
     # check if all virtual domain mailboxes declared on the right hand side of MAIL_FORWARDING
     # are declared in MAILBOXES
-    mailboxes = get_virtual_mailboxes()
     outhosted = mkhost.common.filter_addr_in_domain(mkhost.cfg.MAILBOXES.keys(), get_outgoing_addresses())
-    logging.debug("outhosted (1): {}".format(outhosted))
-    outhosted = outhosted.difference(mailboxes)
-    logging.debug("outhosted (2): {}".format(outhosted))
+    # logging.debug("outhosted (1): {}".format(outhosted))
+    outhosted = outhosted.difference(get_virtual_mailboxes())
+    # logging.debug("outhosted (2): {}".format(outhosted))
     if outhosted:
         raise Exception("Extra addresses on the right hand side in MAIL_FORWARDING: {}. They belong to MAILBOXES domains. Did you forget to declare them in MAILBOXES?".format(outhosted))
