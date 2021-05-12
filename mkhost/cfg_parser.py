@@ -5,12 +5,12 @@ import mkhost.cfg
 
 # Given MAIL_FORWARDING (in the config file), compute the outgoing addresses (those mapped to, but
 # not mapped from). Can include mailboxes and 3rd party addresses.
-def get_outgoing_addresses():
+def get_fwd_dst_addresses():
     vals2     = map(mkhost.common.tolist, mkhost.cfg.MAIL_FORWARDING.values())
     vals      = set(x for ys in vals2 for x in ys)
     keys      = mkhost.cfg.MAIL_FORWARDING.keys()
     outgoing  = vals.difference(keys)
-    logging.debug("get_outgoing_addresses: {}".format(outgoing))
+    logging.debug("get_fwd_dst_addresses: {}".format(outgoing))
     return outgoing
 
 # Given MAILBOXES and MAIL_FORWARDING (in the config file), compute the
@@ -40,7 +40,7 @@ def get_virtual_mailboxes():
 def validate():
     # check if all virtual domain mailboxes declared on the right hand side of MAIL_FORWARDING
     # are declared in MAILBOXES
-    outhosted = mkhost.common.filter_addr_in_domain(mkhost.cfg.MAILBOXES.keys(), get_outgoing_addresses())
+    outhosted = mkhost.common.filter_addr_in_domain(mkhost.cfg.MAILBOXES.keys(), get_fwd_dst_addresses())
     # logging.debug("outhosted (1): {}".format(outhosted))
     outhosted = outhosted.difference(get_virtual_mailboxes())
     # logging.debug("outhosted (2): {}".format(outhosted))
