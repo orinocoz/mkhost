@@ -41,8 +41,6 @@ Later:
    mkhost.py
    ```
 
-   This will configure the mail server.
-
 # TODO
 
 1. Postfix `master.cf` customization
