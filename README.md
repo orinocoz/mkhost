@@ -6,7 +6,7 @@ Everything you will need is a [single configuration file](mkhost/cfg.py). If you
 
 Currently covered are:
 
-1. SSL certificates (by [Let's Encrypt](https://letsencrypt.org/)),
+1. SSL certificates (by [Let's Encrypt](https://letsencrypt.org/))
 2. DKIM (by [OpenDKIM](http://www.opendkim.org/))
 3. SMTP server (by [Postfix](http://www.postfix.org/))
 4. IMAP/POP3 server (by [Dovecot](https://www.dovecot.org/))
