@@ -6,12 +6,12 @@
 
 Everything you need is a [single configuration file](mkhost/cfg.py). If you ever need to make a change later, don't worry: `mkhost` will take care of carefully patching your existing configuration with the latest changes.
 
-Currently covered are:
+Currently supported are:
 
 1. SSL certificates (by [Let's Encrypt](https://letsencrypt.org/))
 2. DKIM (by [OpenDKIM](http://www.opendkim.org/))
-3. SMTP server (by [Postfix](http://www.postfix.org/))
-4. IMAP/POP3 server (by [Dovecot](https://www.dovecot.org/))
+3. SMTP server ([Postfix](http://www.postfix.org/))
+4. IMAP/POP3 server ([Dovecot](https://www.dovecot.org/))
 
 Later:
 
