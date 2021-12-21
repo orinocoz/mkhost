@@ -2,9 +2,9 @@
 
 ## Declarative, idempotent mail server configuration script
 
-`mkhost` makes it easy to setup your own simple mail server, complete with: multiple DNS domains, multiple mailboxes, multiple aliases, mail forwarding to 3rd party e-mail addresses, SMTP/POP3/IMAP support and TLS/SSL support (including X.509 certificate management).
+`mkhost` makes it easy to setup your own simple mail server, complete with: multiple domains, multiple mailboxes, multiple aliases, mail forwarding to 3rd party addresses, SMTP/POP3/IMAP support, TLS/SSL support (including X.509 certificate management).
 
-Everything you will need is a [single configuration file](mkhost/cfg.py). If you ever need to make a change later, don't worry: `mkhost` will take care of carefully patching your existing configuration with the latest changes.
+Everything you need is a [single configuration file](mkhost/cfg.py). If you ever need to make a change later, don't worry: `mkhost` will take care of carefully patching your existing configuration with the latest changes.
 
 Currently covered are:
 
@@ -19,13 +19,15 @@ In progress:
 
 # How to run
 
-1. Edit the [config file](mkhost/cfg.py); this is the only config file you need
+1. Edit the [configuration file](mkhost/cfg.py) as needed
 2. Transfer the files to the remote host
 
    Example:
 
-   ```
-   find . -name '*.git' -prune -o -type f -print0 | tar --null --files-from=- -c | ssh my-remote-user@my-remote-host tar --one-top-level=mkhost-repo -xvf - -C /home/my-remote-user/
+   ```bash
+   find . -name '*.git' -prune -o -type f -print0
+     | tar --null --files-from=- -c
+     | ssh my-remote-user@my-remote-host tar --one-top-level=mkhost-repo -xvf - -C /home/my-remote-user/
    ```
 
 3. Login to the remote host and run:
