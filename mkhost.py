@@ -70,4 +70,7 @@ if __name__ == "__main__":
     mkhost.postfix.install(args.letsencrypt)
 
     # Print DNS log
-    logging.warning("List of DNS changes to apply: {}".format(mkhost.common._dns_log))
+    if mkhost.common._dns_log:
+        logging.warning("List of DNS changes to apply: {}".format(mkhost.common._dns_log))
+    else:
+        logging.info("No DNS changes to apply")

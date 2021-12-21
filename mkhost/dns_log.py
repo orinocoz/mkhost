@@ -10,5 +10,11 @@ class DNSLog:
     def add_record(self, rec):
         self.records.append(rec)
 
+    def __len__(self):
+        return len(self.records)
+
+    def __bool__(self):
+        return (len(self) >= 1)
+
     def __str__(self):
         return os.linesep.join(self.records)
