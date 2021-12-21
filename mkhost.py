@@ -63,10 +63,15 @@ if __name__ == "__main__":
     mkhost.cfg_parser.validate()
 
     # Destructively re-configure the machine
+    logging.info("update system packages...")
     mkhost.common.update_pkgs()
+    logging.info("setup letsencrypt...")
     mkhost.letsencrypt.install()
+    logging.info("setup opendkim...")
     mkhost.opendkim.install()
+    logging.info("setup dovecot...")
     mkhost.dovecot.install(args.doveconf, args.letsencrypt)
+    logging.info("setup postfix...")
     mkhost.postfix.install(args.letsencrypt)
 
     # Print DNS log
