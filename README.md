@@ -17,10 +17,15 @@ Later:
 
 1. [GNU Mailman](https://www.list.org/)
 
+# Requirements
+
+1. Debian GNU/Linux based operating system (with `apt-get`) (on the mail host)
+2. Python3 (on the mail host)
+
 # How to run
 
 1. Edit the [configuration file](mkhost/cfg.py) as needed
-2. Transfer the files to the remote host
+2. Transfer the files to the (remote) mail host
 
    Example:
 
@@ -30,11 +35,13 @@ Later:
      | ssh my-remote-user@my-remote-host tar --one-top-level=mkhost-repo -xvf - -C /home/my-remote-user/
    ```
 
-3. Login to the remote host and run:
+3. Login to the (remote) mail host and run:
 
    ```
    mkhost.py
    ```
+
+   This will configure the mail server.
 
 # TODO
 
