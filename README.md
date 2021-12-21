@@ -13,7 +13,7 @@ Currently covered are:
 3. SMTP server (by [Postfix](http://www.postfix.org/))
 4. IMAP/POP3 server (by [Dovecot](https://www.dovecot.org/))
 
-Later perhaps:
+Later:
 
 1. [GNU Mailman](https://www.list.org/)
 
