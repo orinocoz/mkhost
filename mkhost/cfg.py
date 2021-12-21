@@ -18,6 +18,12 @@ MY_HOST_NAME = "my-host"
 # This must correspond to your DNS.
 MY_HOST_DOMAIN = "example.com"
 
+# Fully-qualified domain name.
+MY_HOST_FULLNAME = (MY_HOST_NAME + "." + MY_HOST_DOMAIN)
+
+# E-mail address to use with the SSL/TLS certificate.
+X509_EMAIL = ("x509" + "@" + MY_HOST_FULLNAME)
+
 # List of mailboxes (per domain).
 MAILBOXES = {
     "b-server": ["user1", "user2"],
