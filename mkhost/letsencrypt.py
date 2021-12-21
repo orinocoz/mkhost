@@ -17,7 +17,7 @@ def install():
     mkhost.common.execute_cmd(
         ["certbot"] + \
         (["certonly", "--dry-run"] if mkhost.common.get_dry_run() else ["run"]) + \
-        (["-n"] if mkhost.common.get_non_interactive() else []) + \
-        ["--apache", "--redirect", "--test-cert", "-d", "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN)])
+        (["--non-interactive"] if mkhost.common.get_non_interactive() else []) + \
+        ["--apache", "--redirect", "--test-cert", "--domain", "{}.{}".format(mkhost.cfg.MY_HOST_NAME, mkhost.cfg.MY_HOST_DOMAIN)])
 
 # TODO implement renew/certonly
