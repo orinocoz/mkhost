@@ -181,7 +181,7 @@ def execute_cmd_interactive(cmdline):
     for t in (err_reader, out_reader):
         t.start()
 
-    # wait for the process to terminate
+    # wait for the child process to terminate
     proc.wait()
     with lk:
         _subproc_running = False
@@ -190,7 +190,7 @@ def execute_cmd_interactive(cmdline):
     for t in (err_reader, out_reader):
         t.join()
 
-    # check the return code
+    # check the child process return code
     if proc.returncode:
         raise subprocess.CalledProcessError(returncode=proc.returncode, cmd=" ".join(cmdline))
 
