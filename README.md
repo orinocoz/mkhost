@@ -44,3 +44,4 @@ Later:
 # TODO
 
 1. Postfix `master.cf` customization
+2. opendkim: skip new selector generation if a recent one already exists; check public/private key files and DNS records!
