@@ -90,16 +90,16 @@ listen = 127.0.0.1, ::1
 # Authentication for system users
 ########################################################################
 
-passdb {{
+passdb {
   driver          = pam
   args            = dovecot
   override_fields = allow_nets=127.0.0.1/32
-}}
+}
 
-userdb {{
+userdb {
   driver          = passwd
   override_fields = mail=maildir:/var/mail/%u/
-}}
+}
 """
 
     configuration += """
@@ -136,43 +136,43 @@ userdb {{
 mail_home     = /var/mailv/%d/%n/
 mail_location = maildir:~/mail/
 
-namespace inbox {{
+namespace inbox {
   type  = private
   inbox = yes
 
-  mailbox Drafts {{
+  mailbox Drafts {
     auto        = create
     special_use = \Drafts
-  }}
-  mailbox Junk {{
+  }
+  mailbox Junk {
     auto        = create
     special_use = \Junk
-  }}
-  mailbox Sent {{
+  }
+  mailbox Sent {
     auto        = subscribe
     special_use = \Sent
-  }}
-  mailbox Trash {{
+  }
+  mailbox Trash {
     auto        = create
     special_use = \Trash
-  }}
-  mailbox virtual/All {{
+  }
+  mailbox virtual/All {
     auto        = no
     special_use = \All
-  }}
-}}
+  }
+}
 
 ########################################################################
 # User authentication service for Postfix
 ########################################################################
 
-service auth {{
-  unix_listener /var/spool/postfix/private/auth {{
+service auth {
+  unix_listener /var/spool/postfix/private/auth {
     group = postfix
     mode  = 0660
     user  = postfix
-  }}
-}}
+  }
+}
 """
 
     configuration += """
