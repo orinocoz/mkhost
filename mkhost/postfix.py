@@ -103,6 +103,11 @@ def postconf_all(letsencrypt_home):
     # http://www.postfix.org/postconf.5.html#virtual_alias_maps
     postconf_set('virtual_alias_maps', "hash:{}".format(mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP))
 
+    # virtual mailbox base (aka directory where virtual mail is stored)
+    #
+    # http://www.postfix.org/postconf.5.html#virtual_mailbox_base
+    postconf_set('virtual_mailbox_base', mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_BASE)
+
     # virtual mailbox domains
     #
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_domains

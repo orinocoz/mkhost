@@ -56,6 +56,11 @@ DOVECOT_LOOPBACK_ONLY = False
 # Dovecot users database
 DOVECOT_USERS_DB = "/etc/dovecot/users.mkhost"
 
+# Postfix virtual mailbox base (aka directory where virtual mail is stored).
+#
+# http://www.postfix.org/postconf.5.html#virtual_mailbox_base
+POSTFIX_VIRTUAL_MAILBOX_BASE = "/var/mail-virtual/"
+
 # Postfix virtual mailbox map file.
 #
 # http://www.postfix.org/postconf.5.html#virtual_mailbox_maps
