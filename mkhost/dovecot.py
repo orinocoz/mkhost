@@ -128,14 +128,17 @@ userdb {{
            mkhost.cfg.DOVECOT_USERS_DB,
            mkhost.cfg.DOVECOT_USERS_DB)
 
+    # Here we use POSTFIX_VIRTUAL_MAILBOX_BASE as the mail store location.
     configuration += """
 ########################################################################
 # Mail layout
 ########################################################################
 
-mail_home     = /var/mailv/%d/%n/
+mail_home     = {}/%d/%n/
 mail_location = maildir:~/mail/
+""".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_BASE)
 
+    configuration += """
 namespace inbox {
   type  = private
   inbox = yes
