@@ -1,7 +1,7 @@
 import logging
 
-import mkhost.common
 import mkhost.cfg
+import mkhost.common
 
 # Given MAIL_FORWARDING (in the config file), compute the outgoing addresses (those mapped to, but
 # not mapped from). Can include mailboxes and 3rd party addresses.
@@ -38,6 +38,9 @@ def get_virtual_mailboxes():
     return mailboxes
 
 def validate():
+    if not mkhost.cfg.LOCAL_MAILBOX_BASE.endswith('/'):
+        raise Exception("LOCAL_MAILBOX_BASE must end with '/' (maildir-style delivery of local mail is enforced)")
+
     # check if all virtual domain mailboxes declared on the right hand side of MAIL_FORWARDING
     # are declared in MAILBOXES
     outhosted = mkhost.common.filter_addr_in_domain(mkhost.cfg.MAILBOXES.keys(), get_fwd_dst_addresses())

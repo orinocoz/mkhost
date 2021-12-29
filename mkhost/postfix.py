@@ -67,21 +67,6 @@ def postconf_all(letsencrypt_home):
     postconf_set('smtpd_tls_mandatory_ciphers',  'high')
     postconf_set('smtpd_tls_security_level',     'may')
     postconf_set('smtpd_tls_wrappermode',        'no')
-
-    # The directory where local(8) UNIX-style mailboxes are kept. The default setting depends on the system type.
-    # Specify a name ending in / for maildir-style delivery.
-    #
-    # Note: maildir delivery is done with the privileges of the recipient. If you use the mail_spool_directory
-    # setting for maildir style delivery, then you must create the top-level maildir directory in advance.
-    # Postfix will not create it.
-    #
-    # http://www.postfix.org/postconf.5.html#mail_spool_directory
-    mail_spool_directory = postconf_get('mail_spool_directory') or '/var/mail/'
-    logging.debug('mail_spool_directory: {}'.format(mail_spool_directory))
-    if not mail_spool_directory.endswith('/'):
-        postconf_set('mail_spool_directory', mail_spool_directory + '/')
-    # TODO create user dirs
-
     postconf_set('smtpd_sasl_path',              'private/auth')
 
     # Only allow methods that support forward secrecy (Dovecot only).
@@ -96,6 +81,16 @@ def postconf_all(letsencrypt_home):
 
     # TODO milter
 
+    # The directory where local(8) UNIX-style mailboxes are kept. The default setting depends on the system type.
+    # Specify a name ending in / for maildir-style delivery.
+    #
+    # Note: maildir delivery is done with the privileges of the recipient. If you use the mail_spool_directory
+    # setting for maildir style delivery, then you must create the top-level maildir directory in advance.
+    # Postfix will not create it.
+    #
+    # http://www.postfix.org/postconf.5.html#mail_spool_directory
+    postconf_set('mail_spool_directory', mkhost.cfg.LOCAL_MAILBOX_BASE)
+
     # virtual alias domains
     #
     # http://www.postfix.org/postconf.5.html#virtual_alias_domains
@@ -107,7 +102,7 @@ def postconf_all(letsencrypt_home):
     # virtual mailbox base (aka directory where virtual mail is stored)
     #
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_base
-    postconf_set('virtual_mailbox_base', mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_BASE)
+    postconf_set('virtual_mailbox_base', mkhost.cfg.VIRTUAL_MAILBOX_BASE)
 
     # virtual mailbox domains
     #

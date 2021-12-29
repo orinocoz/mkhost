@@ -44,9 +44,21 @@ MAIL_FORWARDING = {
     "postmaster@my-domain.tld"      : "postmaster@b-server"
 }
 
+# Postfix mail spool directory (aka directory where local mail is stored).
+# Specify a name ending in / for maildir-style delivery.
+#
+# http://www.postfix.org/postconf.5.html#mail_spool_directory
+LOCAL_MAILBOX_BASE = "/var/mail/"
+
 # System user who owns virtual mail files.
 # It will be created, if missing.
 VIRTUAL_MAIL_USER = 'mkhost-mailv'
+
+# Postfix virtual mailbox base (aka directory where virtual mail is stored).
+# This is used by Dovecot, too.
+#
+# http://www.postfix.org/postconf.5.html#virtual_mailbox_base
+VIRTUAL_MAILBOX_BASE = "/var/mail-virtual/"
 
 # List of mail protocols to enable in Dovecot. This is mapped directly to
 # https://doc.dovecot.org/settings/core/#protocols
@@ -59,12 +71,6 @@ DOVECOT_LOOPBACK_ONLY = False
 
 # Dovecot users database
 DOVECOT_USERS_DB = "/etc/dovecot/users.mkhost"
-
-# Postfix virtual mailbox base (aka directory where virtual mail is stored).
-# This is used by Dovecot, too.
-#
-# http://www.postfix.org/postconf.5.html#virtual_mailbox_base
-POSTFIX_VIRTUAL_MAILBOX_BASE = "/var/mail-virtual/"
 
 # Postfix virtual mailbox map file.
 #

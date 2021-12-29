@@ -1,5 +1,6 @@
 import logging
 import os
+import os.path
 import re
 import secrets
 import shutil
@@ -90,17 +91,17 @@ listen = 127.0.0.1, ::1
 # Authentication for system users
 ########################################################################
 
-passdb {
+passdb {{
   driver          = pam
   args            = dovecot
   override_fields = allow_nets=127.0.0.1/32
-}
+}}
 
-userdb {
+userdb {{
   driver          = passwd
-  override_fields = mail=maildir:/var/mail/%u/
-}
-"""
+  override_fields = mail=maildir:{}
+}}
+""".format(os.path.join(mkhost.cfg.LOCAL_MAILBOX_BASE, '%u/'))
 
     configuration += """
 ########################################################################
@@ -119,24 +120,27 @@ userdb {{
   args   = username_format=%u {}
 
   # Default fields that can be overridden by passwd-file
-  default_fields  = uid=mailv gid=mailv home=/var/mailv/%d/%n/ quota_rule=*:storage=1M
+  default_fields  = uid={} gid={} home={} quota_rule=*:storage=1M
 
   # Override fields from passwd-file
-  override_fields = home=/var/mailv/%d/%n/
+  override_fields = home={}
 }}
 """.format(mkhost.cfg.DOVECOT_USERS_DB,
            mkhost.cfg.DOVECOT_USERS_DB,
-           mkhost.cfg.DOVECOT_USERS_DB)
+           mkhost.cfg.DOVECOT_USERS_DB,
+           mkhost.cfg.VIRTUAL_MAIL_USER,
+           mkhost.cfg.VIRTUAL_MAIL_USER,
+           os.path.join(mkhost.cfg.VIRTUAL_MAILBOX_BASE, '%d/%n/'),
+           os.path.join(mkhost.cfg.VIRTUAL_MAILBOX_BASE, '%d/%n/'))
 
-    # Here we use POSTFIX_VIRTUAL_MAILBOX_BASE as the mail store location.
     configuration += """
 ########################################################################
 # Mail layout
 ########################################################################
 
-mail_home     = {}/%d/%n/
+mail_home     = {}
 mail_location = maildir:~/mail/
-""".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_BASE)
+""".format(os.path.join(mkhost.cfg.VIRTUAL_MAILBOX_BASE, '%d/%n/'))
 
     configuration += """
 namespace inbox {
