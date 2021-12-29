@@ -8,6 +8,7 @@ import tempfile
 import mkhost.cfg
 import mkhost.common
 import mkhost.letsencrypt
+import mkhost.unix
 
 re_valias    = re.compile(
     '^([^@]+)@([^@]+?)\s+(\S+@\S+)((?:\s*,\s*\S+@\S+)*)$', re.ASCII)
@@ -115,6 +116,12 @@ def postconf_all(letsencrypt_home):
 
     # http://www.postfix.org/postconf.5.html#virtual_mailbox_maps
     postconf_set('virtual_mailbox_maps', "hash:{}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP))
+
+    # virtual mail ownership
+    (vm_uid, vm_gid) = mkhost.unix.get_user_info(mkhost.cfg.VIRTUAL_MAIL_USER)
+    postconf_set('virtual_minimum_uid', vm_uid)
+    postconf_set('virtual_uid_maps', "static:{}".format(vm_uid))
+    postconf_set('virtual_gid_maps', "static:{}".format(vm_gid))
 
 # Generates and writes out virtual alias map file (mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP).
 def write_valias_map():
@@ -243,12 +250,17 @@ def write_vmailbox_map():
             shutil.copyfile(f.name, mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP)
             mkhost.common.execute_cmd(["postmap", mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP])
 
+# Creates a system user for owning virtual mail files.
+def setup_vmail_user():
+    mkhost.unix.add_system_user(mkhost.cfg.VIRTUAL_MAIL_USER)
+
 # Installs and configures Postfix.
 #
 # Params:
 #   letsencrypt_home : Let's Encrypt home dir
 def install(letsencrypt_home):
     mkhost.common.install_pkgs(["postfix"])
+    setup_vmail_user()
     write_vmailbox_map()
     write_valias_map()
     postconf_all(letsencrypt_home)

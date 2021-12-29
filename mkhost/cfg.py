@@ -44,6 +44,10 @@ MAIL_FORWARDING = {
     "postmaster@my-domain.tld"      : "postmaster@b-server"
 }
 
+# System user who owns virtual mail files.
+# It will be created, if missing.
+VIRTUAL_MAIL_USER = 'mkhost-mailv'
+
 # List of mail protocols to enable in Dovecot. This is mapped directly to
 # https://doc.dovecot.org/settings/core/#protocols
 DOVECOT_PROTOCOLS = ["imap", "pop3"]
@@ -57,6 +61,7 @@ DOVECOT_LOOPBACK_ONLY = False
 DOVECOT_USERS_DB = "/etc/dovecot/users.mkhost"
 
 # Postfix virtual mailbox base (aka directory where virtual mail is stored).
+# This is used by Dovecot, too.
 #
 # http://www.postfix.org/postconf.5.html#virtual_mailbox_base
 POSTFIX_VIRTUAL_MAILBOX_BASE = "/var/mail-virtual/"
