@@ -12,7 +12,8 @@ def add_system_user(username):
     # TODO: validate username
     try:
         logging.info("add system user: {}".format(username))
-        mkhost.common.execute_cmd_batch(['useradd', '--system', '--user-group', '--no-create-home', '--comment', 'mkhost virtual mail owner', username])
+        if not mkhost.common.get_dry_run():
+            mkhost.common.execute_cmd_batch(['useradd', '--system', '--user-group', '--no-create-home', '--comment', 'mkhost virtual mail owner', username])
     except subprocess.CalledProcessError as e:
         if 9 == e.returncode:
             logging.info("user already exists ({})".format(username))
