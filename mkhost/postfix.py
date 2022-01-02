@@ -249,6 +249,13 @@ def write_vmailbox_map():
 def setup_vmail_user():
     mkhost.unix.add_system_user(mkhost.cfg.VIRTUAL_MAIL_USER)
 
+# Creates virtual mail dir(s).
+def setup_vmail_dirs():
+    if not os.path.isdir(mkhost.cfg.VIRTUAL_MAILBOX_BASE):
+        (vm_uid, vm_gid) = mkhost.unix.get_user_info(mkhost.cfg.VIRTUAL_MAIL_USER)
+        if not mkhost.common.get_dry_run():
+            mkhost.unix.makedir(mkhost.cfg.VIRTUAL_MAILBOX_BASE, vm_uid, vm_gid)
+
 # Installs and configures Postfix.
 #
 # Params:
@@ -256,6 +263,7 @@ def setup_vmail_user():
 def install(letsencrypt_home):
     mkhost.common.install_pkgs(["postfix"])
     setup_vmail_user()
+    setup_vmail_dirs()
     write_vmailbox_map()
     write_valias_map()
     postconf_all(letsencrypt_home)

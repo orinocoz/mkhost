@@ -1,8 +1,17 @@
 import logging
+import os
+import os.path
 import pwd
 import subprocess
 
 import mkhost.common
+
+# Atomically creates a directory owned by the given uid and gid.
+def makedir(path, uid, gid):
+    path = os.path.abspath(path)
+    logging.info("mkdir {}".format(path))
+    os.makedirs(path, mode=0o700, exist_ok=False)
+    os.chown(path, uid, gid)
 
 ##############################################################################
 # System user functions
