@@ -10,6 +10,7 @@ import mkhost.dovecot
 import mkhost.letsencrypt
 import mkhost.opendkim
 import mkhost.postfix
+import mkhost.unix
 
 if __name__ == "__main__":
 
@@ -64,7 +65,7 @@ if __name__ == "__main__":
 
     # Destructively re-configure the machine
     logging.info("update system packages...")
-    mkhost.common.update_pkgs()
+    mkhost.unix.update_pkgs()
     logging.info("setup letsencrypt...")
     mkhost.letsencrypt.install()
     logging.info("setup opendkim...")
