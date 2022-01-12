@@ -222,11 +222,11 @@ def write_users_db():
                         username = m.group(1)
 
                         if username in vboxes:
-                            logging.debug("user already exists: {}".format(username))
+                            logging.info("[dovecot] user already exists: {}".format(username))
                             old_lines.append(line)
                             vboxes.remove(username)
                         else:
-                            logging.info("delete user: {}".format(username))
+                            logging.info("[dovecot] delete user: {}".format(username))
                     else:
                         logging.warning("{}: invalid line: {}".format(mkhost.cfg.DOVECOT_USERS_DB, line))
     except FileNotFoundError:

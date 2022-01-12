@@ -160,13 +160,13 @@ def write_valias_map():
                             # logging.debug("   mto_set: {}".format(mto_set))
 
                             if (len(taddrs) == len(mto)) and (set(taddrs) == set(mto)):
-                                logging.debug("mapping already exists: {} => {}".format(saddr, mto))
+                                logging.debug("[postfix] mapping already exists: {} => {}".format(saddr, mto))
                                 old_lines.append(line)
                                 del mfwd[saddr]
                             else:
-                                logging.info("delete mapping: {} => {}".format(saddr, taddrs))
+                                logging.info("[postfix] delete mapping: {} => {}".format(saddr, taddrs))
                         else:
-                            logging.info("delete mapping: {}".format(saddr))
+                            logging.info("[postfix] delete mapping: {}".format(saddr))
                     else:
                         logging.warning("{}: invalid line: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP, line))
     except FileNotFoundError:
@@ -217,11 +217,11 @@ def write_vmailbox_map():
 
                         # TODO: make the 2nd lookup more effective?...
                         if (domain in mkhost.cfg.MAILBOXES) and (username in mkhost.cfg.MAILBOXES[domain]):
-                            logging.debug("mailbox already exists: {}@{}".format(username, domain))
+                            logging.debug("[postfix] mailbox already exists: {}@{}".format(username, domain))
                             old_lines.append(line)
                             vboxes.remove("{}@{}".format(username, domain))
                         else:
-                            logging.info("delete mailbox: {}@{}".format(username, domain))
+                            logging.info("[postfix] delete mailbox: {}@{}".format(username, domain))
                     else:
                         logging.warning("{}: invalid line: {}".format(mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP, line))
     except FileNotFoundError:
@@ -236,7 +236,7 @@ def write_vmailbox_map():
             print(mkhost.common.mkhost_header(), file=f)
             for x in vboxes:
                 xp = mkhost.common.parse_addr(x)
-                logging.info("create mailbox: {}@{}".format(xp[0],xp[1]))
+                logging.info("[postfix] create mailbox: {}@{}".format(xp[0],xp[1]))
                 print("{}@{}    {}/{}/mail/".format(xp[0],xp[1],xp[1],xp[0]), file=f)
 
         # overwrite old user db file
