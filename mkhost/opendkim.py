@@ -9,6 +9,7 @@ import tempfile
 import mkhost.cfg
 import mkhost.cfg_parser
 import mkhost.common
+import mkhost.unix
 
 re_key_value = re.compile(
     '^(\w+)\s+(\S+)\s*$', re.ASCII)
@@ -109,7 +110,7 @@ def genkey(domain):
     try:
         tempdir = tempfile.mkdtemp(prefix="mkhost-")
         logging.debug("tempdir: {}".format(tempdir))
-        mkhost.common.execute_cmd([
+        mkhost.cmd.execute_cmd([
             "opendkim-genkey", "-a", "-r", "-d", domain, "-s", selector, "-D", tempdir])
 
         if not mkhost.common.get_dry_run():
@@ -126,7 +127,7 @@ def genkey(domain):
 
 # Installs and configures OpenDKIM.
 def install():
-    mkhost.common.install_pkgs(["opendkim", "opendkim-tools"])
+    mkhost.unix.install_pkgs(["opendkim", "opendkim-tools"])
 
     domains = mkhost.cfg_parser.get_alias_domains()
     logging.info("alias_domains: {}".format(domains))

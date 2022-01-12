@@ -1,7 +1,9 @@
 import os.path
 
 import mkhost.cfg
+import mkhost.cmd
 import mkhost.common
+import mkhost.unix
 
 def cert_path(letsencrypt_home):
     return os.path.join(
@@ -13,8 +15,8 @@ def key_path(letsencrypt_home):
 
 # Installs Let's Encrypt's certificate.
 def install():
-    mkhost.common.install_pkgs(["certbot", "python3-certbot-apache"])
-    mkhost.common.execute_cmd(
+    mkhost.unix.install_pkgs(["certbot", "python3-certbot-apache"])
+    mkhost.cmd.execute_cmd(
         ["certbot"] + \
         (["certonly", "--dry-run"] if mkhost.common.get_dry_run() else ["run"]) + \
         (["--non-interactive", "--agree-tos"] if mkhost.common.get_non_interactive() else []) + \

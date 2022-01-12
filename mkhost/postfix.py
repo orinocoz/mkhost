@@ -16,13 +16,13 @@ re_vmailbox  = re.compile(
     '^([^@]+)@([^@]+?)\s+(\S+)$', re.ASCII)
 
 def postconf_del(key):
-    mkhost.common.execute_cmd(["postconf", "-v", "-#", "{}".format(key)])
+    mkhost.cmd.execute_cmd(["postconf", "-v", "-#", "{}".format(key)])
 
 def postconf_get(key):
-    return mkhost.common.execute_cmd(["postconf", "-h", "{}".format(key)])[0][0]
+    return mkhost.cmd.execute_cmd(["postconf", "-h", "{}".format(key)])[0][0]
 
 def postconf_set(key, value):
-    mkhost.common.execute_cmd(["postconf", "-v", "-e", "{}={}".format(key,value)])
+    mkhost.cmd.execute_cmd(["postconf", "-v", "-e", "{}={}".format(key,value)])
 
 def postconf_set_multiple(key, values):
     if values:
@@ -188,7 +188,7 @@ def write_valias_map():
         if not mkhost.common.get_dry_run():
             f.flush()
             shutil.copyfile(f.name, mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP)
-            mkhost.common.execute_cmd(["postmap", mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP])
+            mkhost.cmd.execute_cmd(["postmap", mkhost.cfg.POSTFIX_VIRTUAL_ALIAS_MAP])
 
 # Generates and writes out virtual mailbox map file (mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP).
 def write_vmailbox_map():
@@ -243,7 +243,7 @@ def write_vmailbox_map():
         if not mkhost.common.get_dry_run():
             f.flush()
             shutil.copyfile(f.name, mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP)
-            mkhost.common.execute_cmd(["postmap", mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP])
+            mkhost.cmd.execute_cmd(["postmap", mkhost.cfg.POSTFIX_VIRTUAL_MAILBOX_MAP])
 
 # Creates a system user for owning virtual mail files.
 def setup_vmail_user():
@@ -261,7 +261,7 @@ def setup_vmail_dirs():
 # Params:
 #   letsencrypt_home : Let's Encrypt home dir
 def install(letsencrypt_home):
-    mkhost.common.install_pkgs(["postfix"])
+    mkhost.unix.install_pkgs(["postfix"])
     setup_vmail_user()
     setup_vmail_dirs()
     write_vmailbox_map()

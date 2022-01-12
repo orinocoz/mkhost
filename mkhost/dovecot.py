@@ -11,6 +11,7 @@ import mkhost.common
 import mkhost.cfg
 import mkhost.cfg_parser
 import mkhost.letsencrypt
+import mkhost.unix
 
 re_users = re.compile(
     '^([^:]+):\{([-\w]+)\}\$(\w+)\$[^:]*:(\d*):(\d*)::::$', re.ASCII)
@@ -28,11 +29,11 @@ def gen_pwd_hash(username):
     if mkhost.common.get_non_interactive():
         pwd = gen_pwd()
         logging.info("New password for {}: {}".format(username, pwd))
-        return mkhost.common.execute_cmd_batch(pwd_hash_cmd, input=(pwd + os.linesep + pwd + os.linesep))[0][0]
+        return mkhost.cmd.execute_cmd_batch(pwd_hash_cmd, input=(pwd + os.linesep + pwd + os.linesep))[0][0]
         # TODO clear error message if number of output lines != 1
     else:
         logging.info("New password for {}".format(username))
-        return mkhost.common.execute_cmd_interactive(pwd_hash_cmd)[0][0]
+        return mkhost.cmd.execute_cmd_interactive(pwd_hash_cmd)[0][0]
         # TODO clear error message if number of output lines != 1
 
 # Generates Dovecot configuration and writes it to the given configuration file
@@ -253,7 +254,7 @@ def write_users_db():
 #   doveconf         : path to dovecot configuration file
 #   letsencrypt_home : Let's Encrypt home dir
 def install(doveconf, letsencrypt_home):
-    mkhost.common.install_pkgs(["dovecot-imapd"])
+    mkhost.unix.install_pkgs(["dovecot-imapd"])
 
     write_config(doveconf, letsencrypt_home)
     write_users_db()
