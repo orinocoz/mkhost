@@ -1,7 +1,15 @@
 ##############################################################################
-# The configuration file.
+# mkhost configuration file.
 #
-# Edit below as needed.
+# This file has 2 sections: high level settings (must be adjusted) and low
+# level settings (nothing to change there, in the common case).
+##############################################################################
+
+##############################################################################
+# High level settings
+#
+# This is your business-level configuration: domains, mailboxes, aliases, mail
+# forwarding...
 ##############################################################################
 
 # A simple, 1-component hostname of the target machine.
@@ -18,7 +26,7 @@ MY_HOST_NAME = "my-host"
 # This must correspond to your DNS.
 MY_HOST_DOMAIN = "example.com"
 
-# Fully-qualified domain name.
+# Fully-qualified domain name. No need to change this.
 MY_HOST_FULLNAME = (MY_HOST_NAME + "." + MY_HOST_DOMAIN)
 
 # E-mail address to use with the SSL/TLS certificate.
@@ -44,6 +52,13 @@ MAIL_FORWARDING = {
     "postmaster@my-domain.tld"      : "postmaster@b-server"
 }
 
+##############################################################################
+# Low-level settings
+#
+# These specify: various filepaths and other system details. It should be safe
+# to leave it as is.
+##############################################################################
+
 # Postfix mail spool directory (aka directory where local mail is stored).
 # Specify a name ending in / for maildir-style delivery.
 #
@@ -64,9 +79,10 @@ VIRTUAL_MAILBOX_BASE = "/var/mail-virtual/"
 # https://doc.dovecot.org/settings/core/#protocols
 DOVECOT_PROTOCOLS = ["imap", "pop3"]
 
-# Whether Dovecot should listen on all interfaces (False) or just the
-# localhost (True). If all your users are local, then setting this to
-# True will improve security.
+# Whether Dovecot should listen on all available network interfaces (False)
+# or just the localhost (True).
+# If all your users are local (for example, you always fetch your mail through
+# an SSH tunnel), then setting this to True will improve security.
 DOVECOT_LOOPBACK_ONLY = False
 
 # Dovecot users database
