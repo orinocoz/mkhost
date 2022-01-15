@@ -1,12 +1,13 @@
 ##############################################################################
 # mkhost configuration file.
 #
-# This file has 2 sections: high level settings (must be adjusted) and low
-# level settings (nothing to change there, in the common case).
+# This file has 2 sections: high-level settings (must be adjusted) and low-
+# level settings (nothing to change there, unless you know what you are
+# doing).
 ##############################################################################
 
 ##############################################################################
-# High level settings
+# High-level settings
 #
 # This is your business-level configuration: domains, mailboxes, aliases, mail
 # forwarding...
