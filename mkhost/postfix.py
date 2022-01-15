@@ -59,7 +59,8 @@ def postconf_all(letsencrypt_home):
     # TODO: reject_rbl_client zen.spamhaus.org ?
     postconf_set('smtpd_recipient_restrictions', 'permit_mynetworks permit_sasl_authenticated reject_unauth_destination')
     postconf_set('smtpd_relay_restrictions',     'permit_mynetworks permit_sasl_authenticated reject_unauth_destination')
-    postconf_set('smtpd_sasl_auth_enable',       'no')
+    # TODO: make this a cfg setting
+    postconf_set('smtpd_sasl_auth_enable',       'yes')
     postconf_set('smtpd_tls_auth_only',          'yes')
     postconf_set('smtpd_tls_cert_file',          mkhost.letsencrypt.cert_path(letsencrypt_home))
     postconf_set('smtpd_tls_key_file',           mkhost.letsencrypt.key_path(letsencrypt_home))
