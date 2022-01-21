@@ -69,10 +69,8 @@ def postconf_all(letsencrypt_home):
     postconf_set('smtpd_tls_security_level',     'may')
     postconf_set('smtpd_tls_wrappermode',        'no')
     postconf_set('smtpd_sasl_path',              'private/auth')
-
-    # Only allow methods that support forward secrecy (Dovecot only).
-    # http://www.postfix.org/postconf.5.html#smtpd_sasl_security_options
-    postconf_set('smtpd_sasl_security_options',  'noanonymous forward_secrecy')
+    postconf_set('smtpd_sasl_security_options',  'noanonymous noplaintext')
+    postconf_set('smtpd_sasl_tls_security_options', 'noanonymous')
 
     # The SASL plug-in type that the Postfix SMTP server should use for authentication.
     # The available types are listed with the "postconf -a" command.
