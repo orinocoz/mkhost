@@ -72,8 +72,9 @@ auth_mechanisms = plain login
 mail_full_filesystem_access = no
 
 # Verbose logging so that we know what is going on.
-auth_verbose = yes
-verbose_ssl  = yes
+auth_verbose      = yes
+verbose_ssl       = yes
+verbose_proctitle = yes
 
 protocols    = {}
 """.format(mkhost.common.mkhost_header(),
