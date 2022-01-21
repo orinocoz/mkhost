@@ -65,7 +65,8 @@ shutdown_clients = yes
 disable_plaintext_auth = yes
 
 # Just plain authentication using a password.
-auth_mechanisms = plain
+# Login mechanism is for Outlook client.
+auth_mechanisms = plain login
 
 # Allow full filesystem access to clients?
 mail_full_filesystem_access = no
