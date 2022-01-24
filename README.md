@@ -47,6 +47,15 @@ None.
    mkhost.py
    ```
 
+# Testing
+
+Here are some 3rd party services you can use to verify your installation:
+
+1. https://testtls.com/
+2. https://ssl-tools.net/
+3. https://mxtoolbox.com/
+4. https://www.dmarcanalyzer.com/spf/checker/
+
 # TODO
 
 1. [ ] Postfix `master.cf` customization
