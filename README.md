@@ -1,4 +1,4 @@
-# Generate your own mail server in just a couple of lines
+# Create your own mail server in just a couple of lines
 
 ## Declarative, idempotent mail server configuration script
 
@@ -22,10 +22,12 @@ Later:
 1. Debian GNU/Linux based operating system (with `apt-get`) (on the mail host)
 2. Python3 (on the mail host)
 
+On your local machine you can use whatever you want.
+
 # How to run
 
-1. Edit the [configuration file](mkhost/cfg.py) as needed
-2. Transfer the files to the (remote) mail host
+1. Edit [configuration file](mkhost/cfg.py) as needed
+2. Transfer files to the (remote) mail host
 
    Example:
 
