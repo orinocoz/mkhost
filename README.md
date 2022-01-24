@@ -15,16 +15,6 @@ Everything you need is a [single configuration file](mkhost/cfg.py). If you ever
 5. batch and interactive modes
 6. dry run mode
 
-### Not supported
-
-1. [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework)
-2. [DMARC](https://en.wikipedia.org/wiki/DMARC)
-3. web server, webmail, mailing list manager...
-
-You need to configure [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework) and [DMARC](https://en.wikipedia.org/wiki/DMARC) in your DNS. This will improve your protection against e-mail spoofing and is recommended, but not required.
-
-This is a basic script which does not include any kind of webmail or mailing list manager. You can install those from [Debian](https://packages.debian.org/stable/mail/).
-
 # Synopsis
 
 ```
@@ -88,6 +78,16 @@ Here are some 3rd party services you can use to verify your installation:
 # Caveats
 
 User authentication is handled by [Dovecot SASL](https://doc.dovecot.org/admin_manual/sasl/). Virtual user passwords are stored encrypted in a [passwd file](https://doc.dovecot.org/configuration_manual/authentication/passwd_file/). This is a minimalistic user management mechanism which does not require a SQL database or LDAP, but we don't know of a generic way for a non-admin user to change anyone's password.
+
+## Not included
+
+1. [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework)
+2. [DMARC](https://en.wikipedia.org/wiki/DMARC)
+3. web server, webmail, mailing list manager...
+
+You need to configure [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework) and [DMARC](https://en.wikipedia.org/wiki/DMARC) in your DNS. This will improve your protection against e-mail spoofing and is recommended, but not required.
+
+This is a basic script which does not include any kind of webmail or mailing list manager. You can install those from [Debian](https://packages.debian.org/stable/mail/).
 
 ## Batch mode
 
