@@ -43,6 +43,9 @@ Later:
 
 # TODO
 
-1. Postfix `master.cf` customization
-2. opendkim: skip new selector generation if a recent one already exists; check public/private key files and DNS records!
-3. SSH hardening
+1. [ ] Postfix `master.cf` customization
+2. [x] (WON'T FIX) opendkim: skip new selector generation if a recent one already exists; check public/private key files and DNS records!
+3. [ ] SSH hardening
+4. [ ] intermediary certificate (let's encrypt) missing error (some clients)
+5. [x] (WON'T FIX) reverse DNS check
+6. [ ] DANE support: https://ssl-tools.net/dane
