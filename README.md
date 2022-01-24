@@ -8,28 +8,35 @@ Everything you need is a [single configuration file](mkhost/cfg.py). If you ever
 
 ### Currently supported
 
-1. SSL certificates (by [Let's Encrypt](https://letsencrypt.org/))
+1. TLS/SSL certificates (by [Let's Encrypt](https://letsencrypt.org/))
 2. DKIM (by [OpenDKIM](http://www.opendkim.org/))
 3. SMTP server ([Postfix](http://www.postfix.org/))
 4. IMAP/POP3 server ([Dovecot](https://www.dovecot.org/))
 
-### Not covered
+### Not supported
 
 1. [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework)
 2. [DMARC](https://en.wikipedia.org/wiki/DMARC)
+3. web server, webmail, mailing list manager...
 
-You need to configure those in your DNS.
+You need to configure [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework) and [DMARC](https://en.wikipedia.org/wiki/DMARC) in your DNS. This will improve your protection against e-mail spoofing and is recommended, but not required.
+
+This is a basic script which does not include any kind of webmail or mailing list manager. You can install those from [Debian](https://packages.debian.org/stable/mail/).
 
 # Requirements
 
 ## Requirements for the target mail host
 
-1. Debian GNU/Linux based operating system (with `apt-get`)
-2. Python3
+1. [Debian](https://www.debian.org/) GNU/Linux based operating system (with `apt-get`)
+2. Python 3.x
 
 ## Requirements for your local machine
 
 None.
+
+# Caveats
+
+User authentication is handled by [Dovecot SASL](https://doc.dovecot.org/admin_manual/sasl/). Virtual user passwords are stored encrypted in a [passwd file](https://doc.dovecot.org/configuration_manual/authentication/passwd_file/). For each virtual user, the password will be auto-generated on the first run and printed to the [log](https://docs.python.org/3/library/logging.html), so make sure to take a note of it (and to delete the log file, if any). This is a minimalistic user management mechanism which does not require a SQL database or LDAP, but we don't know of a generic way for a non-admin user to change anyone's password.
 
 # How to run
 
@@ -69,3 +76,4 @@ Here are some 3rd party services you can use to verify your installation:
 6. [ ] DANE support: https://ssl-tools.net/dane
 7. [ ] generate DNS records for SPF
 8. [ ] generate DNS records for DMARC
+9. [ ] (BEGINNER-FRIENDLY) make virtual user password length configurable
