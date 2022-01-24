@@ -19,15 +19,19 @@ Later:
 
 # Requirements
 
-1. Debian GNU/Linux based operating system (with `apt-get`) (on the mail host)
-2. Python3 (on the mail host)
+## Requirements for the target mail host
 
-On your local machine you can use whatever you want.
+1. Debian GNU/Linux based operating system (with `apt-get`)
+2. Python3
+
+## Requirements for your local machine
+
+None.
 
 # How to run
 
 1. Edit [configuration file](mkhost/cfg.py) as needed
-2. Transfer files to the (remote) mail host
+2. Transfer files to the (remote) target mail host
 
    Example:
 
@@ -37,7 +41,7 @@ On your local machine you can use whatever you want.
      | ssh my-remote-user@my-remote-host tar --one-top-level=mkhost-repo -xvf - -C /home/my-remote-user/
    ```
 
-3. Login to the (remote) mail host and run:
+3. Login to the (remote) target mail host and run:
 
    ```
    mkhost.py
