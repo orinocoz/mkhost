@@ -6,7 +6,7 @@
 
 Everything you need is a [single configuration file](mkhost/cfg.py). If you ever need to make a change later, don't worry: `mkhost` will take care of carefully patching your existing configuration with the latest changes.
 
-### Currently supported
+### Features
 
 1. TLS/SSL certificates (by [Let's Encrypt](https://letsencrypt.org/))
 2. DKIM (by [OpenDKIM](http://www.opendkim.org/))
