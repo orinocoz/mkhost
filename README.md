@@ -81,7 +81,7 @@ Here are some 3rd party services you can use to verify your installation:
 
 1. [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework), [DMARC](https://en.wikipedia.org/wiki/DMARC)
 
-   You need to configure [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework) and [DMARC](https://en.wikipedia.org/wiki/DMARC) in your DNS. This will improve your protection against e-mail spoofing and is recommended, but not required.
+   You need to configure SPF and DMARC in your DNS. This will improve your protection against e-mail spoofing and is recommended, but not required.
 
 2. web server, webmail, mailing list manager...
 
