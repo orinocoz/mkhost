@@ -9,7 +9,7 @@ import mkhost.dns_log
 ##############################################################################
 
 _version_major   = 0
-_version_minor   = 3
+_version_minor   = 4
 _dry_run         = True
 _verbose         = False
 _non_interactive = False
