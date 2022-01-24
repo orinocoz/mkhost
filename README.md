@@ -2,7 +2,7 @@
 
 ## Declarative, idempotent mail server configuration script
 
-`mkhost` makes it easy to setup your own simple mail server, complete with: multiple domains, multiple mailboxes, multiple aliases, mail forwarding to 3rd party addresses, SMTP/POP3/IMAP support, TLS/SSL support (including X.509 certificate management). Typical usecases include: small- or medium-sized enterprise, family or household, cheap mail (self-)hosting of multiple domains, webapp prototyping etc.
+`mkhost` makes it easy to setup your own simple mail server, complete with: multiple domains, multiple mailboxes, multiple aliases, mail forwarding to 3rd party addresses, SMTP/POP3/IMAP support, TLS/SSL support (including X.509 certificate management). Typical use cases include: small- or medium-sized enterprise, family or household, cheap mail (self-)hosting of multiple domains, webapp prototyping etc.
 
 Everything you need is a [single configuration file](mkhost/cfg.py). If you ever need to make a change later, don't worry: `mkhost` will take care of carefully patching your existing configuration with the latest changes.
 
