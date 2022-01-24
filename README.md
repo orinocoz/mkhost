@@ -66,6 +66,10 @@ Here are some 3rd party services you can use to verify your installation:
 
 User authentication is handled by [Dovecot SASL](https://doc.dovecot.org/admin_manual/sasl/). Virtual user passwords are stored encrypted in a [passwd file](https://doc.dovecot.org/configuration_manual/authentication/passwd_file/). For each virtual user, the password is auto-generated on the first run and printed to the [log](https://docs.python.org/3/library/logging.html), so make sure to take a note of it (and to delete the log file, if any). This is a minimalistic user management mechanism which does not require a SQL database or LDAP, but we don't know of a generic way for a non-admin user to change anyone's password.
 
+# Feedback and contributions
+
+You are welcome! Please get in touch.
+
 # TODO
 
 1. [ ] Postfix `master.cf` customization
