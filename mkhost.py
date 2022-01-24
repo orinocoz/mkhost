@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 import sys
 
 import mkhost.cfg
@@ -77,6 +78,6 @@ if __name__ == "__main__":
 
     # Print DNS log
     if mkhost.common._dns_log:
-        logging.warning("List of DNS changes to apply: {}".format(mkhost.common._dns_log))
+        logging.warning("List of DNS changes to apply:{}{}".format(2 * os.linesep, mkhost.common._dns_log))
     else:
         logging.info("No DNS changes to apply")
