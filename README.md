@@ -91,6 +91,8 @@ This is a basic script which does not include any kind of webmail or mailing lis
 
 User authentication is handled by [Dovecot SASL](https://doc.dovecot.org/admin_manual/sasl/). Virtual user passwords are stored encrypted in a [passwd file](https://doc.dovecot.org/configuration_manual/authentication/passwd_file/). This is a minimalistic user management mechanism which does not require a SQL database or LDAP, but we don't know of a generic way for a non-admin user to change anyone's password.
 
+Virtual user accounts in this context are non-UNIX user accounts which are internal to Postfix/Dovecot (they are unknown to the operating system). They can be used for mail delivery, sending and for authentication. You can read more about this concept [here](http://www.postfix.org/VIRTUAL_README.html#virtual_mailbox).
+
 ## Batch mode
 
 For each virtual user, the password is auto-generated on the first run and printed to the [log](https://docs.python.org/3/library/logging.html), so make sure to take a note of it (and to delete the log file, if any).
