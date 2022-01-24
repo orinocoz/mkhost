@@ -6,16 +6,19 @@
 
 Everything you need is a [single configuration file](mkhost/cfg.py). If you ever need to make a change later, don't worry: `mkhost` will take care of carefully patching your existing configuration with the latest changes.
 
-Currently supported:
+### Currently supported
 
 1. SSL certificates (by [Let's Encrypt](https://letsencrypt.org/))
 2. DKIM (by [OpenDKIM](http://www.opendkim.org/))
 3. SMTP server ([Postfix](http://www.postfix.org/))
 4. IMAP/POP3 server ([Dovecot](https://www.dovecot.org/))
 
-Later:
+### Not covered
 
-1. [GNU Mailman](https://www.list.org/)
+1. [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework)
+2. [DMARC](https://en.wikipedia.org/wiki/DMARC)
+
+You need to configure those in your DNS.
 
 # Requirements
 
@@ -64,3 +67,5 @@ Here are some 3rd party services you can use to verify your installation:
 4. [ ] intermediary certificate (let's encrypt) missing error (some clients)
 5. [x] (WON'T FIX) reverse DNS check
 6. [ ] DANE support: https://ssl-tools.net/dane
+7. [ ] generate DNS records for SPF
+8. [ ] generate DNS records for DMARC
