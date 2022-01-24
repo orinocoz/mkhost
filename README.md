@@ -60,7 +60,7 @@ None.
      | ssh my-remote-user@my-remote-host tar --one-top-level=mkhost-repo -xvf - -C /home/my-remote-user/
    ```
 
-3. Login to the (remote) target mail host and run (as `root`):
+3. Login to the (remote) target mail host and execute (as `root`):
 
    ```
    mkhost.py
