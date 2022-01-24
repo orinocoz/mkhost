@@ -12,6 +12,8 @@ Everything you need is a [single configuration file](mkhost/cfg.py). If you ever
 2. DKIM (by [OpenDKIM](http://www.opendkim.org/))
 3. SMTP server ([Postfix](http://www.postfix.org/))
 4. IMAP/POP3 server ([Dovecot](https://www.dovecot.org/))
+5. batch and interactive modes
+6. dry run mode
 
 ### Not supported
 
@@ -22,6 +24,27 @@ Everything you need is a [single configuration file](mkhost/cfg.py). If you ever
 You need to configure [SPF](https://en.wikipedia.org/wiki/Sender_Policy_Framework) and [DMARC](https://en.wikipedia.org/wiki/DMARC) in your DNS. This will improve your protection against e-mail spoofing and is recommended, but not required.
 
 This is a basic script which does not include any kind of webmail or mailing list manager. You can install those from [Debian](https://packages.debian.org/stable/mail/).
+
+# Synopsis
+
+```
+$ mkhost.py --help
+usage: mkhost.py [-h] [--doveconf FILE] [--letsencrypt DIR] [--batch]
+                 [--dry-run] [--verbose]
+
+Re-configures this machine according to the hardcoded configuration (cfg.py).
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --doveconf FILE    Dovecot configuration file; default:
+                     /etc/dovecot/dovecot.conf
+  --letsencrypt DIR  Let's Encrypt home directory; default: /etc/letsencrypt/
+  --batch            batch mode (non-interactive)
+  --dry-run          dry run (no change)
+  --verbose          verbose processing
+
+This program comes with ABSOLUTELY NO WARRANTY.
+```
 
 # Requirements
 
@@ -64,7 +87,11 @@ Here are some 3rd party services you can use to verify your installation:
 
 # Caveats
 
-User authentication is handled by [Dovecot SASL](https://doc.dovecot.org/admin_manual/sasl/). Virtual user passwords are stored encrypted in a [passwd file](https://doc.dovecot.org/configuration_manual/authentication/passwd_file/). For each virtual user, the password is auto-generated on the first run and printed to the [log](https://docs.python.org/3/library/logging.html), so make sure to take a note of it (and to delete the log file, if any). This is a minimalistic user management mechanism which does not require a SQL database or LDAP, but we don't know of a generic way for a non-admin user to change anyone's password.
+User authentication is handled by [Dovecot SASL](https://doc.dovecot.org/admin_manual/sasl/). Virtual user passwords are stored encrypted in a [passwd file](https://doc.dovecot.org/configuration_manual/authentication/passwd_file/). This is a minimalistic user management mechanism which does not require a SQL database or LDAP, but we don't know of a generic way for a non-admin user to change anyone's password.
+
+## Batch mode
+
+For each virtual user, the password is auto-generated on the first run and printed to the [log](https://docs.python.org/3/library/logging.html), so make sure to take a note of it (and to delete the log file, if any).
 
 # Feedback and contributions
 
